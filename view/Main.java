@@ -146,7 +146,7 @@ public class Main {
 
     public static void editStockForProducto() {
         String codigoProducto = requestData("Código del producto a modificar: ");
-        int stock = readInt("Nuevo stock: ");
+        int stock = readInt("Nuevo stock (en negativo para quitar): ");
         if (Controlador.editStockForProducto(codigoProducto, stock)) {
             System.out.println("Stock modificado correctamente.");
         } else {
@@ -201,22 +201,14 @@ public class Main {
             imprimirColumnas(f);
         }
         System.out.println("\n-------------- END --------------\n");
-        // System.out.println(datos.replace(';', ' '));
-        // echar vistazo al formateo
     }
 
     private static void imprimirColumnas(String line) {
-        // String formato = "%-15s %-15s %-15s %-15s %-30s %-12s %-12s%n";
-        // System.out.printf(formato, "nombre", "apellido1", "apellido2", "dni", "email", "telefono", "codCliente");
-
         String[] columnas = line.split(";");
         for (String c : columnas) {
             System.out.printf("| %-20.20s ", c);
-            // System.out.println();
         }
         System.out.println();
-        // System.out.printf("%-10.10s", datos.replace(';', ' '));
-        // System.out.println(linea.replace(';', ' '));
     }
 
     private static int getOptionMenu() {
