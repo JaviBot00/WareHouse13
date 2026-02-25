@@ -1,16 +1,18 @@
 package controller;
 
-import model.*;
-import java.util.List;
+import model.Producto;
+import model.ProductoPerecedero;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class Controlador {
+    private static List<Producto> listaDeProductosInicial;
+    private static List<Producto> listaDeProductosRetirados;
     // instance variables
     private static Controlador instance;
-    private static final List<Producto> listaDeProductosInicial = DataAccess.loadData();
-    private static final List<Producto> listaDeProductosRetirados = new ArrayList<>();
 
     //Singleton
     //poner aquí
@@ -21,7 +23,8 @@ public class Controlador {
     private Controlador() {
         //Poner código aquí para que la lista inicial de productos esté
         //siempre disponible cuando se arranca el programa.
-
+        listaDeProductosInicial = DataAccess.loadData();
+        listaDeProductosRetirados = new ArrayList<>();
     }
 
     public static Controlador getSingleton() {
@@ -60,7 +63,7 @@ public class Controlador {
         return false;
     }
 
-    public String listProductos() {
+    public static String listProductos() {
         StringBuilder sb = new StringBuilder();
         Collections.sort(listaDeProductosInicial);
 
@@ -96,10 +99,14 @@ public class Controlador {
         StringBuilder sb = new StringBuilder();
         Collections.sort(listaDeProductosInicial);
 
-        for (Producto pp : listaDeProductosRetirados) {
-            // if (pp.getFechaCaducidad()) {
-                sb.append(pp).append("\n");
-            // }
+        LocalDate hoy = LocalDate.now();
+
+        for (Producto pp : listaDeProductosInicial) {
+            if (pp instanceof ProductoPerecedero perecedero) {
+                if (perecedero.getFechaCaducidad().isBefore(hoy)) {
+                    sb.append(perecedero).append("\n");
+                }
+            }
         }
         return ProductoPerecedero.getCsvFormat() + "\n" + sb;
     }
@@ -114,7 +121,6 @@ public class Controlador {
             }
         }
         return ProductoPerecedero.getCsvFormat() + "\n" + sb;
-
     }
 
     public static String listProductosRetirados() {
@@ -140,5 +146,4 @@ public class Controlador {
         if (dataset.length < 5) return null;
         return new ProductoPerecedero(dataset[0], dataset[1], Double.parseDouble(dataset[2]), Integer.parseInt(dataset[3]), dataset[4]);
     }
-
 }
