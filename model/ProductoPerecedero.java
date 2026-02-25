@@ -1,28 +1,26 @@
 package model;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
-/**
- * Write a description of class ProductoPerecedero here.
- * 
- * @author (your name) 
- * @version (a version number or a date)
- */
 public class ProductoPerecedero extends Producto {
-    
-    private static final String CSV_FORMAT = "fechaCaducidad";
-    private String fechaCaducidad; // AAAA MM DD
 
-    public ProductoPerecedero(String codigoProducto, String descripcion, double precio, int stock, String fechaCaducidad) {
+    private static final String CSV_FORMAT = "fechaCaducidad";
+    private static final DateTimeFormatter FORMATO =
+        DateTimeFormatter.ofPattern("yyyyMMdd");
+    private LocalDate fechaCaducidad; // AAAAMMDD
+
+    public ProductoPerecedero(String codigoProducto, String descripcion, double precio, int stock, String fechaCaducidadString) {
         super(codigoProducto, descripcion, precio, stock);
-        this.fechaCaducidad = fechaCaducidad;
+        this.fechaCaducidad = LocalDate.parse(fechaCaducidadString, FORMATO);
     }
 
-    public String getFechaCaducidad() {
+    public LocalDate getFechaCaducidad() {
         return fechaCaducidad;
     }
 
-    public void setFechaCaducidad(String fechaCaducidad) {
-        this.fechaCaducidad = fechaCaducidad;
+    public void setFechaCaducidad(String fechaCaducidadString) {
+        this.fechaCaducidad = LocalDate.parse(fechaCaducidadString, FORMATO);
     }
 
     public static String getCsvFormat() {

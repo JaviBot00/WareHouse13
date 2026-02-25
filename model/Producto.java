@@ -21,6 +21,22 @@ public class Producto implements Comparable<Producto> {
         this.stock = stock;
     }
 
+    public static String getCsvFormat() {
+        return CSV_FORMAT;
+    }
+
+    public static Producto cargarDesdeCSVPlus(String data) {
+        String codigoProducto = "";
+        String descripcion = "";
+        double precio = 0;
+        int stock = 0;
+
+        //Poner aquí tu código
+
+        return new Producto(codigoProducto, descripcion, precio, stock);
+
+    }
+
     // Getters y Setters
     public String getCodigoProducto() {
         return codigoProducto;
@@ -46,7 +62,7 @@ public class Producto implements Comparable<Producto> {
     }
 
     public void setPrecio(double precio) {
-        if (precio>=0.0) this.precio = precio;
+        if (precio >= 0.0) this.precio = precio;
     }
 
     public int getStock() {
@@ -58,33 +74,17 @@ public class Producto implements Comparable<Producto> {
         this.stock += newStock;  //si newStock es negativo, se quita al almacén unidades del producto
     }
 
-    public static String getCsvFormat() {
-        return CSV_FORMAT;
-    }
-
     // Método para mostrar la información del producto. CSV Plus
     @Override
     public String toString() {
         return codigoProducto + ";"
-               + descripcion + ";"
-               + precio + ";"
-               + stock + ";";
+            + descripcion + ";"
+            + precio + ";"
+            + stock + ";";
     }
 
     @Override
     public int compareTo(Producto p) {
         return this.descripcion.compareToIgnoreCase(p.descripcion);
-    }
-    
-    public static Producto cargarDesdeCSVPlus(String data) {
-        String codigoProducto = "";
-        String descripcion = "";
-        double precio = 0;
-        int stock = 0;
-        
-        //Poner aquí tu código
-        
-        return new Producto(codigoProducto, descripcion, precio, stock);
-        
     }
 }
