@@ -61,7 +61,7 @@ public class Controller {
 
     public boolean editStockForProduct(String productCode, int stock) {
         for (Product p : productList) {
-            if (p.getProductCode().equalsIgnoreCase(String.valueOf(productCode))) {
+            if (p.getProductCode().equalsIgnoreCase(productCode)) {
                 p.changeStock(stock);
                 return true;
             }
@@ -80,7 +80,7 @@ public class Controller {
 
     public boolean withdrawProduct(String productCode) {
         for (Product p : productList) {
-            if (p.getProductCode().equalsIgnoreCase(String.valueOf(productCode))) {
+            if (p.getProductCode().equalsIgnoreCase(productCode)) {
                 retiredProductList.add(p);
                 return productList.remove(p);
             }
@@ -137,14 +137,14 @@ public class Controller {
 
         // Clean y explícit
         if (!jsonObject.has("productCode") || !jsonObject.has("description") ||
-            !jsonObject.has("price") || !jsonObject.has("stock") || !jsonObject.has("expirationDate")) return null;
+            !jsonObject.has("price") || !jsonObject.has("stock") || !jsonObject.has("expiryDate")) return null;
 
         return new PerishableProduct(
             jsonObject.get("productCode").getAsString(),
             jsonObject.get("description").getAsString(),
             jsonObject.get("price").getAsDouble(),
             jsonObject.get("stock").getAsInt(),
-            jsonObject.get("expirationDate").getAsString()
+            jsonObject.get("expiryDate").getAsString()
         );
     }
 }

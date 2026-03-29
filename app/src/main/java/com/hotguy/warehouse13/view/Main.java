@@ -149,7 +149,7 @@ public class Main {
         data.put("price", readDouble("Product price: "));
         data.put("stock", readInt("Product stock: "));
         if (isPerishable) {
-            data.put("expirationDate", requestData("Expiration date (YYYYMMDD): "));
+            data.put("expiryDate", requestData("Expiration date (YYYYMMDD): "));
         }
         if (Controller.getSingleton().addProduct(isPerishable, new Gson().toJson(data))) {
             System.out.println("Product added successfully.");
