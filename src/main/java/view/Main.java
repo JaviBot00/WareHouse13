@@ -1,65 +1,79 @@
-package view;
-
-import controller.Controlador;
+package src.main.java.view;
 
 import java.util.Scanner;
 
+import src.main.java.controller.Controlador;
 
 /**
  * Descripción del examen:
  * 
- * Hay que terminar un prototipo para gestión del stock de productos de un almacén
- * El proyecto tiene una serie de clases incompletas añadidas, y tendrás que crear también 
- * una clase ProductoPerecedero que será un producto que tendrá fecha de caducidad (AAAAMMDD)
- * Tu objetivo: implementar el prototipo hasta hacer funcionales todas las opciones del menú, 
+ * Hay que terminar un prototipo para gestión del stock de productos de un
+ * almacén
+ * El proyecto tiene una serie de clases incompletas añadidas, y tendrás que
+ * crear también
+ * una clase ProductoPerecedero que será un producto que tendrá fecha de
+ * caducidad (AAAAMMDD)
+ * Tu objetivo: implementar el prototipo hasta hacer funcionales todas las
+ * opciones del menú,
  * teniendo en cuenta que:
- *  - El controlador tendrá una colección List de productos, donde estarán todos los productos
- *  activos
- *  - El controlador tendrá otra colección List de productos con los productos retirados (por 
- *  obsoletos, caducados, o lo que sea)
- *  - Cuando añadimos un producto puede ser normal o perecedero
- *  - Cuando modificamos el stock de un producto, se solicita el código del producto y el stock
- *  - Cuando queremos retirar un producto, pedimos su código
- *  - Cuando queremos mostrar productos entre dos precios pedimos el mínimo y el máximo precio
- *  que usaremos para obtener de la lista de productos activos, los que cumplan con el filtro
- *  - En las demás opciones realizamos lo solicitado sin necesidad de obtener ningún dato por 
- *  teclado
- *  - El controlador es de tipo Singleton
- *  - La vista NO usa objetos ni clases del modelo. El proyecto es MVC con capas puras
- *  - Hay que implementar los listados como tablas, con una cabecera y los datos en forma de filas
- *  pero sin tener la información de los atributos. Ejemplo:
- *  Clase,Código Producto,Descripción,Precio,Stock,Caducidad
-    Producto,TECL5678X,Teclado mecánico RGB con switches rojos,89.99,45
-    Producto,RATN9012K,Ratón inalámbrico ergonómico con 5 botones,34.50,67
-    Producto,AURC3456L,Auriculares inalámbricos con cancelación de ruido,129.99,23
-    Producto,WEBC7890P,Webcam Full HD 1080p con micrófono integrado,59.90,32
-    Producto,HUBB2345M,Hub USB 3.0 de 4 puertos con alimentación,24.75,56
-    Producto,INK55665F,Toner b/w genérico HP 8750,79.99,18,20260713
-    
-    - En el ejemplo anterior, la última línea es una producto perecedero
-    
- *  - Podéis reutilizar código del Taller mecánico, el que queráis
- *  - El examen dura unas 2 horas y media (se cerrará la entrega a las 10:55)
- *  
- *  - Antes de esa hora, hay que entregar el proyecto en ZIP en la classroom
- *  - Después, se puede seguir trabajando en el proyecto, que completo, se defenderá
- *  a la vuelta de semana blanca.
- *  
- *  Evaluación: 
- *  1ª Oportunidad: ZIP entregado en la classroom
- *  2ª Oportunidad: Repositorio depués de semana blanca
- *  
- *  Cada opción de menú: 1.25 puntos. Total: 10p. Aprobar: 5p.
- *  
+ * - El controlador tendrá una colección List de productos, donde estarán todos
+ * los productos
+ * activos
+ * - El controlador tendrá otra colección List de productos con los productos
+ * retirados (por
+ * obsoletos, caducados, o lo que sea)
+ * - Cuando añadimos un producto puede ser normal o perecedero
+ * - Cuando modificamos el stock de un producto, se solicita el código del
+ * producto y el stock
+ * - Cuando queremos retirar un producto, pedimos su código
+ * - Cuando queremos mostrar productos entre dos precios pedimos el mínimo y el
+ * máximo precio
+ * que usaremos para obtener de la lista de productos activos, los que cumplan
+ * con el filtro
+ * - En las demás opciones realizamos lo solicitado sin necesidad de obtener
+ * ningún dato por
+ * teclado
+ * - El controlador es de tipo Singleton
+ * - La vista NO usa objetos ni clases del modelo. El proyecto es MVC con capas
+ * puras
+ * - Hay que implementar los listados como tablas, con una cabecera y los datos
+ * en forma de filas
+ * pero sin tener la información de los atributos. Ejemplo:
+ * Clase,Código Producto,Descripción,Precio,Stock,Caducidad
+ * Producto,TECL5678X,Teclado mecánico RGB con switches rojos,89.99,45
+ * Producto,RATN9012K,Ratón inalámbrico ergonómico con 5 botones,34.50,67
+ * Producto,AURC3456L,Auriculares inalámbricos con cancelación de
+ * ruido,129.99,23
+ * Producto,WEBC7890P,Webcam Full HD 1080p con micrófono integrado,59.90,32
+ * Producto,HUBB2345M,Hub USB 3.0 de 4 puertos con alimentación,24.75,56
+ * Producto,INK55665F,Toner b/w genérico HP 8750,79.99,18,20260713
+ * 
+ * - En el ejemplo anterior, la última línea es una producto perecedero
+ * 
+ * - Podéis reutilizar código del Taller mecánico, el que queráis
+ * - El examen dura unas 2 horas y media (se cerrará la entrega a las 10:55)
+ * 
+ * - Antes de esa hora, hay que entregar el proyecto en ZIP en la classroom
+ * - Después, se puede seguir trabajando en el proyecto, que completo, se
+ * defenderá
+ * a la vuelta de semana blanca.
+ * 
+ * Evaluación:
+ * 1ª Oportunidad: ZIP entregado en la classroom
+ * 2ª Oportunidad: Repositorio depués de semana blanca
+ * 
+ * Cada opción de menú: 1.25 puntos. Total: 10p. Aprobar: 5p.
+ * 
  */
 public class Main {
     // Clase principal de la vista
 
-    private static Controlador controller = Controlador.getSingleton();
+    // private static Controlador controller = Controlador.getSingleton();
 
     public static void main(String[] args) {
-        //Poner aquí el bucle para ejecutar mostrar menú, escoger opción y ejecutarla la opción
-        //Hasta pulsar opción 0 que es salir
+        // Poner aquí el bucle para ejecutar mostrar menú, escoger opción y ejecutarla
+        // la opción
+        // Hasta pulsar opción 0 que es salir
         System.out.println("Bienvenido al sistema de gestión del Almacén 13.");
 
         boolean onGoing = true;
@@ -74,7 +88,7 @@ public class Main {
             }
         } while (onGoing);
     }
-    
+
     public static void mostrarMenu() {
         System.out.println("--------------------------------------------------------");
         System.out.println("-                                                      -");
@@ -136,8 +150,9 @@ public class Main {
         if (isPerecedero) {
             fechaCaducidad = requestData("Fecha de caducidad (AAAAMMDD): ");
         }
-        String csvProduct = codigoProducto + ";" + descripcion + ";" + precio + ";" + stock + (isPerecedero ? ";" + fechaCaducidad : "");
-        if (Controlador.addProducto(isPerecedero, csvProduct)) {
+        String csvProduct = codigoProducto + ";" + descripcion + ";" + precio + ";" + stock
+                + (isPerecedero ? ";" + fechaCaducidad : "");
+        if (Controlador.getSingleton().addProducto(isPerecedero, csvProduct)) {
             System.out.println("Producto añadido correctamente.");
         } else {
             System.out.println("No se ha podido añadir el producto. Revisa el formato de los datos introducidos.");
@@ -162,7 +177,7 @@ public class Main {
 
     public static void retirarProducto() {
         String codigoProducto = requestData("Código del producto a retirar: ");
-        if (Controlador.retirarProducto(codigoProducto)) {
+        if (Controlador.getSingleton().retirarProducto(codigoProducto)) {
             System.out.println("Producto retirado correctamente.");
         } else {
             System.out.println("No se ha encontrado el producto con el código indicado.");
@@ -170,13 +185,13 @@ public class Main {
     }
 
     public static void listProductosSinStock() {
-        String productosSinStockData = Controlador.listProductoSinStock();
+        String productosSinStockData = Controlador.getSingleton().listProductoSinStock();
         System.out.println("Listado of Productos sin stock:\n");
         imprimirDatos(productosSinStockData);
     }
 
     public static void listProductosCaducados() {
-        String productosCaducadosData = Controlador.listProductosCaducados();
+        String productosCaducadosData = Controlador.getSingleton().listProductosCaducados();
         System.out.println("Listado of Productos caducados:\n");
         imprimirDatos(productosCaducadosData);
     }
@@ -184,13 +199,13 @@ public class Main {
     public static void listProductosBtwPrecios() {
         double minPrice = readInt("Precio mínimo: ");
         double maxPrice = readInt("Precio máximo: ");
-        String productosBtwPreciosData = Controlador.listProductosBtwPrecios(minPrice, maxPrice);
+        String productosBtwPreciosData = Controlador.getSingleton().listProductosBtwPrecios(minPrice, maxPrice);
         System.out.println("Listado of Productos entre " + minPrice + " y " + maxPrice + ":\n");
         imprimirDatos(productosBtwPreciosData);
     }
 
     public static void listarProductosRetirados() {
-        String productosRetiradosData = Controlador.listProductosRetirados();
+        String productosRetiradosData = Controlador.getSingleton().listProductosRetirados();
         System.out.println("Listado of Productos retirados:\n");
         imprimirDatos(productosRetiradosData);
     }

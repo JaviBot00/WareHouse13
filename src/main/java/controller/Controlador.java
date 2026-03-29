@@ -1,7 +1,7 @@
-package controller;
+package src.main.java.controller;
 
-import model.Producto;
-import model.ProductoPerecedero;
+import src.main.java.model.Producto;
+import src.main.java.model.ProductoPerecedero;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -14,15 +14,15 @@ public class Controlador {
     // instance variables
     private static Controlador instance;
 
-    //Singleton
-    //poner aquí
+    // Singleton
+    // poner aquí
 
     /**
      * Constructor for objects of class Controlador
      */
     private Controlador() {
-        //Poner código aquí para que la lista inicial de productos esté
-        //siempre disponible cuando se arranca el programa.
+        // Poner código aquí para que la lista inicial de productos esté
+        // siempre disponible cuando se arranca el programa.
         listaDeProductosInicial = DataAccess.loadData();
         listaDeProductosRetirados = new ArrayList<>();
     }
@@ -35,15 +35,15 @@ public class Controlador {
         return instance;
     }
 
-
-    public static boolean addProducto(boolean perecedero, String csvProduct) {
+    public boolean addProducto(boolean perecedero, String csvProduct) {
         Producto p = null;
         if (perecedero) {
             p = parseProductPerecedero(csvProduct);
         } else {
             p = parseProduct(csvProduct);
         }
-        if (p == null) return false;
+        if (p == null)
+            return false;
 
         for (Producto aux : listaDeProductosInicial) {
             if (aux.getCodigoProducto().equalsIgnoreCase(p.getCodigoProducto())) {
@@ -63,7 +63,7 @@ public class Controlador {
         return false;
     }
 
-    public static String listProductos() {
+    public String listProductos() {
         StringBuilder sb = new StringBuilder();
         Collections.sort(listaDeProductosInicial);
 
@@ -73,7 +73,7 @@ public class Controlador {
         return ProductoPerecedero.getCsvFormat() + "\n" + sb;
     }
 
-    public static boolean retirarProducto(String codigoProducto) {
+    public boolean retirarProducto(String codigoProducto) {
         for (Producto p : listaDeProductosInicial) {
             if (p.getCodigoProducto().equalsIgnoreCase(String.valueOf(codigoProducto))) {
                 listaDeProductosRetirados.add(p);
@@ -83,7 +83,7 @@ public class Controlador {
         return false;
     }
 
-    public static String listProductoSinStock() {
+    public String listProductoSinStock() {
         StringBuilder sb = new StringBuilder();
         Collections.sort(listaDeProductosInicial);
 
@@ -95,7 +95,7 @@ public class Controlador {
         return ProductoPerecedero.getCsvFormat() + "\n" + sb;
     }
 
-    public static String listProductosCaducados() {
+    public String listProductosCaducados() {
         StringBuilder sb = new StringBuilder();
         Collections.sort(listaDeProductosInicial);
 
@@ -111,7 +111,7 @@ public class Controlador {
         return ProductoPerecedero.getCsvFormat() + "\n" + sb;
     }
 
-    public static String listProductosBtwPrecios(double min, double max) {
+    public String listProductosBtwPrecios(double min, double max) {
         StringBuilder sb = new StringBuilder();
         Collections.sort(listaDeProductosInicial);
 
@@ -123,7 +123,7 @@ public class Controlador {
         return ProductoPerecedero.getCsvFormat() + "\n" + sb;
     }
 
-    public static String listProductosRetirados() {
+    public String listProductosRetirados() {
         StringBuilder sb = new StringBuilder();
         Collections.sort(listaDeProductosRetirados);
 
@@ -133,17 +133,22 @@ public class Controlador {
         return ProductoPerecedero.getCsvFormat() + "\n" + sb;
     }
 
-    private static Producto parseProduct(String csvProduct) {
-        if (csvProduct == null) return null;
+    private Producto parseProduct(String csvProduct) {
+        if (csvProduct == null)
+            return null;
         String[] dataset = csvProduct.split(";");
-        if (dataset.length < 4) return null;
+        if (dataset.length < 4)
+            return null;
         return new Producto(dataset[0], dataset[1], Double.parseDouble(dataset[2]), Integer.parseInt(dataset[3]));
     }
 
-    private static ProductoPerecedero parseProductPerecedero(String csvProduct) {
-        if (csvProduct == null) return null;
+    private ProductoPerecedero parseProductPerecedero(String csvProduct) {
+        if (csvProduct == null)
+            return null;
         String[] dataset = csvProduct.split(";");
-        if (dataset.length < 5) return null;
-        return new ProductoPerecedero(dataset[0], dataset[1], Double.parseDouble(dataset[2]), Integer.parseInt(dataset[3]), dataset[4]);
+        if (dataset.length < 5)
+            return null;
+        return new ProductoPerecedero(dataset[0], dataset[1], Double.parseDouble(dataset[2]),
+                Integer.parseInt(dataset[3]), dataset[4]);
     }
 }

@@ -1,4 +1,4 @@
-package model;
+package src.main.java.model;
 
 import java.util.Comparator;
 
@@ -31,7 +31,7 @@ public class Producto implements Comparable<Producto> {
         double precio = 0;
         int stock = 0;
 
-        //Poner aquí tu código
+        // Poner aquí tu código
 
         return new Producto(codigoProducto, descripcion, precio, stock);
 
@@ -44,7 +44,8 @@ public class Producto implements Comparable<Producto> {
 
     public void setCodigoProducto(String codigoProducto) {
         if (codigoProducto == null || codigoProducto.length() < 8 || codigoProducto.length() > 16) {
-            throw new IllegalArgumentException("El código de producto debe ser alfanumérico y tener entre 8 y 16 caracteres.");
+            throw new IllegalArgumentException(
+                    "El código de producto debe ser alfanumérico y tener entre 8 y 16 caracteres.");
         }
         this.codigoProducto = codigoProducto;
     }
@@ -62,7 +63,8 @@ public class Producto implements Comparable<Producto> {
     }
 
     public void setPrecio(double precio) {
-        if (precio >= 0.0) this.precio = precio;
+        if (precio >= 0.0)
+            this.precio = precio;
     }
 
     public int getStock() {
@@ -70,17 +72,18 @@ public class Producto implements Comparable<Producto> {
     }
 
     public void changeStock(int newStock) {
-        if (this.stock + newStock < 0) return; //nunca tenemos stock negativo
-        this.stock += newStock;  //si newStock es negativo, se quita al almacén unidades del producto
+        if (this.stock + newStock < 0)
+            return; // nunca tenemos stock negativo
+        this.stock += newStock; // si newStock es negativo, se quita al almacén unidades del producto
     }
 
     // Método para mostrar la información del producto. CSV Plus
     @Override
     public String toString() {
         return codigoProducto + ";"
-            + descripcion + ";"
-            + precio + ";"
-            + stock + ";";
+                + descripcion + ";"
+                + precio + ";"
+                + stock + ";";
     }
 
     @Override

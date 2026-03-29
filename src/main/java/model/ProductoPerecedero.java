@@ -1,4 +1,4 @@
-package model;
+package src.main.java.model;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -6,11 +6,11 @@ import java.time.format.DateTimeFormatter;
 public class ProductoPerecedero extends Producto {
 
     private static final String CSV_FORMAT = "fechaCaducidad";
-    private static final DateTimeFormatter FORMATO =
-        DateTimeFormatter.ofPattern("yyyyMMdd");
+    private static final DateTimeFormatter FORMATO = DateTimeFormatter.ofPattern("yyyyMMdd");
     private LocalDate fechaCaducidad; // AAAAMMDD
 
-    public ProductoPerecedero(String codigoProducto, String descripcion, double precio, int stock, String fechaCaducidadString) {
+    public ProductoPerecedero(String codigoProducto, String descripcion, double precio, int stock,
+            String fechaCaducidadString) {
         super(codigoProducto, descripcion, precio, stock);
         this.fechaCaducidad = LocalDate.parse(fechaCaducidadString, FORMATO);
     }
