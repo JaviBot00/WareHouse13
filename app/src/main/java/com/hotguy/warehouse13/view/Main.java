@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.hotguy.warehouse13.controller.Controlador;
+import com.hotguy.warehouse13.controller.Controller;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -75,144 +75,144 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("Bienvenido al sistema de gestión del Almacén 13.");
+        System.out.println("Welcome to the Warehouse 13 management system.");
 
         boolean onGoing = true;
 
         do {
-            mostrarMenu();
+            showMenu();
             int option = getOptionMenu();
             if (option != 0) {
-                realizarOpcion(option);
+                handleOption(option);
             } else {
                 onGoing = false;
             }
         } while (onGoing);
     }
 
-    public static void mostrarMenu() {
+    public static void showMenu() {
         System.out.println("--------------------------------------------------------");
         System.out.println("-                                                      -");
-        System.out.println("- Menú del proyecto: Almacén de productos              -");
+        System.out.println("- Project Menu: Product Warehouse                      -");
         System.out.println("-                                                      -");
-        System.out.println("- 0. Salir                                             -");
-        System.out.println("- 1. Añadir nuevo producto                             -");
-        System.out.println("- 2. Añadir/quitar stock a un producto                 -");
-        System.out.println("- 3. Listar todo (productos ordenados por descripción) -");
-        System.out.println("- 4. Retirar un producto y su stock                    -");
-        System.out.println("- 5. Mostrar productos con stock 0                     -");
-        System.out.println("- 6. Mostrar productos caducados                       -");
-        System.out.println("- 7. Mostrar productos entre dos precios               -");
-        System.out.println("- 8. Mostrar productos retirados                       -");
+        System.out.println("- 0. Exit                                              -");
+        System.out.println("- 1. Add new product                                   -");
+        System.out.println("- 2. Add/remove stock from a product                   -");
+        System.out.println("- 3. List all (products sorted by description)         -");
+        System.out.println("- 4. Withdraw a product and its stock                  -");
+        System.out.println("- 5. Show products with 0 stock                        -");
+        System.out.println("- 6. Show expired products                             -");
+        System.out.println("- 7. Show products between two prices                  -");
+        System.out.println("- 8. Show withdrawn products                           -");
         System.out.println("-                                                      -");
         System.out.println("-                                                      -");
         System.out.println("--------------------------------------------------------");
     }
 
-    public static void realizarOpcion(int opcion) {
-        switch (opcion) {
+    public static void handleOption(int opt) {
+        switch (opt) {
             case 1:
-                addProducto();
+                addProduct();
                 break;
             case 2:
-                editStockForProducto();
+                editStockForProduct();
                 break;
             case 3:
-                listProductos();
+                listProducts();
                 break;
             case 4:
-                retirarProducto();
+                withdrawProduct();
                 break;
             case 5:
-                listProductosSinStock();
+                listProductsNoStock();
                 break;
             case 6:
-                listProductosCaducados();
+                listExpiredProducts();
                 break;
             case 7:
-                listProductosBtwPrecios();
+                listProductsBetweenPrices();
                 break;
             case 8:
-                listarProductosRetirados();
+                listWithdrawnProducts();
                 break;
             default:
                 break;
         }
     }
 
-    public static void addProducto() {
+    public static void addProduct() {
         Map<String, Object> data = new LinkedHashMap<>();
-        System.out.println("Introduce el producto a añadir: ");
-        boolean isPerecedero = requestData("¿Es un producto perecedero? (s/n): ").equalsIgnoreCase("s");
-        data.put("codigoProducto", requestData("Código del producto: "));
-        data.put("descripcion", requestData("Descripción del producto: "));
-        data.put("precio", readDouble("Precio del producto: "));
-        data.put("stock", readInt("Stock del producto: "));
-        if (isPerecedero) {
-            data.put("fechaCaducidad", requestData("Fecha de caducidad (AAAAMMDD): "));
+        System.out.println("Enter the product details: ");
+        boolean isPerishable = requestData("Is it a perishable product? (y/n): ").equalsIgnoreCase("y");
+        data.put("productCode", requestData("Product code: "));
+        data.put("description", requestData("Product description: "));
+        data.put("price", readDouble("Product price: "));
+        data.put("stock", readInt("Product stock: "));
+        if (isPerishable) {
+            data.put("expirationDate", requestData("Expiration date (YYYYMMDD): "));
         }
-        if (Controlador.getSingleton().addProducto(isPerecedero, new Gson().toJson(data))) {
-            System.out.println("Producto añadido correctamente.");
+        if (Controller.getSingleton().addProduct(isPerishable, new Gson().toJson(data))) {
+            System.out.println("Product added successfully.");
         } else {
-            System.out.println("No se ha podido añadir el producto. Revisa el formato de los datos introducidos.");
+            System.out.println("Could not add the product. Please check the data format.");
         }
     }
 
-    public static void editStockForProducto() {
-        String codigoProducto = requestData("Código del producto a modificar: ");
-        int stock = readInt("Nuevo stock (en negativo para quitar): ");
-        if (Controlador.getSingleton().editStockForProducto(codigoProducto, stock)) {
-            System.out.println("Stock modificado correctamente.");
+    public static void editStockForProduct() {
+        String code = requestData("Product code to update: ");
+        int stockChange = readInt("Stock change (negative to remove): ");
+        if (Controller.getSingleton().editStockForProduct(code, stockChange)) {
+            System.out.println("Stock modified successfully.");
         } else {
-            System.out.println("No se ha encontrado el producto con el código indicado.");
+            System.out.println("Product with the specified code not found.");
         }
     }
 
-    public static void listProductos() {
-        System.out.println("Listado of Productos:\n");
-        imprimirDatos(Controlador.getSingleton().listProductos());
+    public static void listProducts() {
+        System.out.println("Product list:\n");
+        printData(Controller.getSingleton().listProducts());
     }
 
-    public static void retirarProducto() {
-        if (Controlador.getSingleton().retirarProduct(requestData("Código del producto a retirar: "))) {
-            System.out.println("Producto retirado correctamente.");
+    public static void withdrawProduct() {
+        if (Controller.getSingleton().withdrawProduct(requestData("Product code to withdraw: "))) {
+            System.out.println("Product withdrawn successfully.");
         } else {
-            System.out.println("No se ha encontrado el producto con el código indicado.");
+            System.out.println("Product with the specified code not found.");
         }
     }
 
-    public static void listProductosSinStock() {
-        System.out.println("Listado of Productos sin stock:\n");
-        imprimirDatos(Controlador.getSingleton().listProductsSinStock());
+    public static void listProductsNoStock() {
+        System.out.println("Products out of stock:\n");
+        printData(Controller.getSingleton().listProductsNoStock());
     }
 
-    public static void listProductosCaducados() {
-        System.out.println("Listado of Productos caducados:\n");
-        imprimirDatos(Controlador.getSingleton().listProductsCaducados());
+    public static void listExpiredProducts() {
+        System.out.println("Expired products:\n");
+        printData(Controller.getSingleton().listExpiredProducts());
     }
 
-    public static void listProductosBtwPrecios() {
-        double minPrice = readDouble("Precio mínimo: ");
-        double maxPrice = readDouble("Precio máximo: ");
-        System.out.println("Listado of Productos entre " + minPrice + " y " + maxPrice + ":\n");
-        imprimirDatos(Controlador.getSingleton().listProductosBtwPrecios(minPrice, maxPrice));
+    public static void listProductsBetweenPrices() {
+        double minPrice = readDouble("Minimum price: ");
+        double maxPrice = readDouble("Maximum price: ");
+        System.out.println("Products between " + minPrice + " and " + maxPrice + ":\n");
+        printData(Controller.getSingleton().listProductsBetweenPrices(minPrice, maxPrice));
     }
 
-    public static void listarProductosRetirados() {
-        System.out.println("Listado of Productos retirados:\n");
-        imprimirDatos(Controlador.getSingleton().listProductosRetirados());
+    public static void listWithdrawnProducts() {
+        System.out.println("List of Withdrawn products:\n");
+        printData(Controller.getSingleton().listWithdrawnProducts());
     }
 
-    private static void imprimirDatos(String dataset) {
+    private static void printData(String dataset) {
         if (dataset == null || dataset.isEmpty()) return;
 
         JsonArray jsonArray = JsonParser.parseString(dataset).getAsJsonArray();
         if (jsonArray.isEmpty()) return;
 
-        // Cabecera con las claves del primer elemento
+        // Header with the keys of first element
         JsonObject primero = jsonArray.get(0).getAsJsonObject();
         for (String clave : primero.keySet()) {
-            System.out.printf("| %-20.20s ", clave);
+            System.out.printf("| %-20.20s ", clave.toUpperCase());
         }
 //        System.out.println("|");
 //        for (int i = 0; i < primero.keySet().size(); i++) {
@@ -220,15 +220,15 @@ public class Main {
 //        }
 //        System.out.println();
 
-        // Datos — todos los elementos
+        // Data — all elements
         for (int i = 0; i < jsonArray.size(); i++) {
-            imprimirColumnas(jsonArray.get(i).getAsJsonObject());
+            printColumns(jsonArray.get(i).getAsJsonObject());
         }
 
         System.out.println("\n-------------- END --------------\n");
     }
 
-    private static void imprimirColumnas(JsonObject line) {
+    private static void printColumns(JsonObject line) {
         for (String clave : line.keySet()) {
             System.out.printf("| %-20.20s ", line.get(clave));
         }

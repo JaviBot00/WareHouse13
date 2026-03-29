@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.hotguy.warehouse13.controller.Controlador;
+import com.hotguy.warehouse13.controller.Controller;
 import com.hotguy.warehouse13.controller.ProductsRVAdapter;
 import com.hotguy.warehouse13.databinding.FragmentListBinding;
 
@@ -37,7 +37,7 @@ public class ListFragment extends Fragment {
 
 
         myRecyclerView = binding.rvList;
-        myAdapter = new ProductsRVAdapter(Controlador.getSingleton().getList());
+        myAdapter = new ProductsRVAdapter(Controller.getSingleton().getList());
         myRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         myRecyclerView.setAdapter(myAdapter);
     }

@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
             transaction.add(binding.contentMain.fragmentContainerView.getId(), target, tag);
         }
 
-        // Solo ocultar los conocidos
+        // Only hide the known
         for (String knownTag : new String[]{TAG_ADD, TAG_LIST, TAG_SETTING}) {
             Fragment f = getSupportFragmentManager().findFragmentByTag(knownTag);
             if (f != null && !knownTag.equals(tag)) {

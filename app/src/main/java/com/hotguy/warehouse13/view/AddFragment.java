@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.hotguy.warehouse13.R;
 import com.hotguy.warehouse13.databinding.FragmentAddBinding;
 
 public class AddFragment extends Fragment {
@@ -43,13 +44,13 @@ public class AddFragment extends Fragment {
             String itemStock = stockEdit.getText().toString().trim();
 
             if (!itemDesc.isEmpty() && !itemPrice.isEmpty() && !itemStock.isEmpty()) {
-                Toast.makeText(requireContext(), "Item added successfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), getString(R.string.toast_item_added), Toast.LENGTH_SHORT).show();
 
                 descEdit.setText("");
                 priceEdit.setText("");
                 stockEdit.setText("");
             } else {
-                Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), getString(R.string.toast_fill_fields), Toast.LENGTH_SHORT).show();
             }
 
         });

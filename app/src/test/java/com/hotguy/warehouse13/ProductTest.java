@@ -1,72 +1,73 @@
 package com.hotguy.warehouse13;
 
-import com.hotguy.warehouse13.model.Producto;
-
 import static org.junit.jupiter.api.Assertions.*;
+
+import com.hotguy.warehouse13.model.Product;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test class for Producto model.
- *
+ * <p>
  * This class contains comprehensive unit tests for the Producto class,
  * testing constructor, getters, setters, and business logic methods.
  *
  * @author HotGuy
  * @version 1.0
  */
-public class ProductoTest {
+public class ProductTest {
 
     // Test data
-    private String validCodigo;
-    private String validDescripcion;
-    private double validPrecio;
+    private String validProductCode;
+    private String validDescription;
+    private double validPrice;
     private int validStock;
-    private Producto producto;
+    private Product product;
 
     /**
-     * Default constructor for test class ProductoTest.
+     * Default constructor for test class ProductTest.
      */
-    public ProductoTest() {
+    public ProductTest() {
     }
 
     /**
      * Sets up the test fixture.
-     *
+     * <p>
      * This method is called before every test case method.
      * It initializes common test data used across multiple tests.
      */
     @BeforeEach
     public void setUp() {
         // Initialize valid test data
-        validCodigo = "CC112244A";
-        validDescripcion = "Portatil Asus AST-45";
-        validPrecio = 899.99;
+        validProductCode = "CC112244A";
+        validDescription = "Portatil Asus AST-45";
+        validPrice = 899.99;
         validStock = 10;
 
         // Create a valid product instance
-        producto = new Producto(validCodigo, validDescripcion, validPrecio, validStock);
+        product = new Product(validProductCode, validDescription, validPrice, validStock);
     }
 
     /**
      * Tears down the test fixture.
-     *
+     * <p>
      * This method is called after every test case method.
      * Cleanup operations can be performed here if needed.
      */
     @AfterEach
     public void tearDown() {
         // Clean up resources if needed
-        producto = null;
+        product = null;
     }
 
     // ==================== CONSTRUCTOR TESTS ====================
 
     /**
      * Test valid constructor with valid parameters.
-     *
+     * <p>
      * This test verifies that a Producto object can be successfully created
      * with valid parameters: codigo (8-16 chars), descripcion, precio, and stock.
      */
@@ -82,19 +83,19 @@ public class ProductoTest {
         int stock = 5;
 
         // Act - Create product instance
-        Producto p = new Producto(codigo, descripcion, precio, stock);
+        Product p = new Product(codigo, descripcion, precio, stock);
 
         // Assert - Verify object was created correctly
         assertNotNull(p);
-        assertEquals(codigo, p.getCodigoProducto());
-        assertEquals(descripcion, p.getDescripcion());
-        assertEquals(precio, p.getPrecio());
+        assertEquals(codigo, p.getProductCode());
+        assertEquals(descripcion, p.getDescription());
+        assertEquals(precio, p.getPrice());
         assertEquals(stock, p.getStock());
     }
 
     /**
      * Test constructor with null codigo should throw IllegalArgumentException.
-     *
+     * <p>
      * Verifies that passing null as codigo raises an exception,
      * as per the validation rule in setCodigoProducto().
      */
@@ -109,13 +110,13 @@ public class ProductoTest {
 
         // Act & Assert - Verify exception is thrown
         assertThrows(IllegalArgumentException.class, () -> {
-            new Producto(codigoNulo, descripcion, precio, stock);
+            new Product(codigoNulo, descripcion, precio, stock);
         });
     }
 
     /**
      * Test constructor with codigo too short (less than 8 characters).
-     *
+     * <p>
      * Verifies that the setCodigoProducto validation enforces
      * minimum length requirement of 8 characters.
      */
@@ -130,13 +131,13 @@ public class ProductoTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
-            new Producto(codigoCorto, descripcion, precio, stock);
+            new Product(codigoCorto, descripcion, precio, stock);
         });
     }
 
     /**
      * Test constructor with codigo too long (more than 16 characters).
-     *
+     * <p>
      * Verifies that the setCodigoProducto validation enforces
      * maximum length requirement of 16 characters.
      */
@@ -151,13 +152,13 @@ public class ProductoTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
-            new Producto(codigoLargo, descripcion, precio, stock);
+            new Product(codigoLargo, descripcion, precio, stock);
         });
     }
 
     /**
      * Test constructor with exactly 8 character codigo (minimum valid length).
-     *
+     * <p>
      * Boundary test to verify that exactly 8 characters is accepted.
      */
     @Test
@@ -170,15 +171,15 @@ public class ProductoTest {
         int stock = 5;
 
         // Act
-        Producto p = new Producto(codigoMinimo, descripcion, precio, stock);
+        Product p = new Product(codigoMinimo, descripcion, precio, stock);
 
         // Assert
-        assertEquals(codigoMinimo, p.getCodigoProducto());
+        assertEquals(codigoMinimo, p.getProductCode());
     }
 
     /**
      * Test constructor with exactly 16 character codigo (maximum valid length).
-     *
+     * <p>
      * Boundary test to verify that exactly 16 characters is accepted.
      */
     @Test
@@ -191,35 +192,35 @@ public class ProductoTest {
         int stock = 5;
 
         // Act
-        Producto p = new Producto(codigoMaximo, descripcion, precio, stock);
+        Product p = new Product(codigoMaximo, descripcion, precio, stock);
 
         // Assert
-        assertEquals(codigoMaximo, p.getCodigoProducto());
+        assertEquals(codigoMaximo, p.getProductCode());
     }
 
     // ==================== GETTER AND SETTER TESTS ====================
 
     /**
      * Test getPrecio getter method.
-     *
+     * <p>
      * Verifies that getPrecio returns the correct price value.
      */
     @Test
     @DisplayName("getPrecio should return the correct price")
     public void testGetPrecio() {
         // Arrange
-        double expectedPrecio = 899.99;
+        double expectedPrice = 899.99;
 
         // Act
-        double actualPrecio = producto.getPrecio();
+        double actualPrice = product.getPrice();
 
         // Assert
-        assertEquals(expectedPrecio, actualPrecio, 0.01); // Delta for floating point comparison
+        assertEquals(expectedPrice, actualPrice, 0.01); // Delta for floating point comparison
     }
 
     /**
      * Test setPrecio with valid positive price.
-     *
+     * <p>
      * Verifies that setPrecio correctly updates the price value
      * when given a valid positive number.
      */
@@ -230,15 +231,15 @@ public class ProductoTest {
         double newPrecio = 1299.99;
 
         // Act
-        producto.setPrecio(newPrecio);
+        product.setPrice(newPrecio);
 
         // Assert
-        assertEquals(newPrecio, producto.getPrecio(), 0.01);
+        assertEquals(newPrecio, product.getPrice(), 0.01);
     }
 
     /**
      * Test setPrecio with zero price.
-     *
+     * <p>
      * Verifies that setPrecio accepts zero as a valid price value
      * (free products).
      */
@@ -249,71 +250,71 @@ public class ProductoTest {
         double newPrecio = 0.0;
 
         // Act
-        producto.setPrecio(newPrecio);
+        product.setPrice(newPrecio);
 
         // Assert
-        assertEquals(0.0, producto.getPrecio());
+        assertEquals(0.0, product.getPrice());
     }
 
     /**
      * Test setPrecio with negative price.
-     *
+     * <p>
      * Verifies that setPrecio rejects negative prices by not updating
      * the price value (business rule: price must be >= 0).
      */
     @Test
     @DisplayName("setPrecio with negative value should NOT update price")
-    public void testSetPrecioWithNegativeValue() {
+    public void testSetPriceWithNegativeValue() {
         // Arrange
-        double originalPrecio = producto.getPrecio();
-        double negativePrecio = -100.0;
+        double originalPrice = product.getPrice();
+        double negativePrice = -100.0;
 
         // Act
-        producto.setPrecio(negativePrecio);
+        product.setPrice(negativePrice);
 
         // Assert - Price should remain unchanged
-        assertEquals(originalPrecio, producto.getPrecio());
+        assertEquals(originalPrice, product.getPrice());
     }
 
     /**
-     * Test getDescripcion getter method.
-     *
-     * Verifies that getDescripcion returns the correct description.
+     * Test getDescription getter method.
+     * <p>
+     * Verifies that getDescription returns the correct description.
      */
     @Test
-    @DisplayName("getDescripcion should return the correct description")
+    @DisplayName("getDescription should return the correct description")
     public void testGetDescripcion() {
         // Arrange
         String expectedDescripcion = "Portatil Asus AST-45";
 
         // Act
-        String actualDescripcion = producto.getDescripcion();
+        String actualDescripcion = product.getDescription();
 
         // Assert
         assertEquals(expectedDescripcion, actualDescripcion);
     }
 
     /**
-     * Test setDescripcion with valid string.
-     *
-     * Verifies that setDescripcion correctly updates the description.
+     * Test setDescription with valid string.
+     * <p>
+     * Verifies that setDescription correctly updates the description.
      */
     @Test
-    @DisplayName("setDescripcion should update description")
+    @DisplayName("setDescription should update description")
     public void testSetDescripcion() {
         // Arrange
         String newDescripcion = "Monitor LG 32 pulgadas 4K";
 
         // Act
-        producto.setDescripcion(newDescripcion);
+        product.setDescription(newDescripcion);
 
         // Assert
-        assertEquals(newDescripcion, producto.getDescripcion());
+        assertEquals(newDescripcion, product.getDescription());
     }
 
     /**
      * Test getCodigoProducto getter method.
-     *
+     * <p>
      * Verifies that getCodigoProducto returns the correct codigo.
      */
     @Test
@@ -323,7 +324,7 @@ public class ProductoTest {
         String expectedCodigo = "CC112244A";
 
         // Act
-        String actualCodigo = producto.getCodigoProducto();
+        String actualCodigo = product.getProductCode();
 
         // Assert
         assertEquals(expectedCodigo, actualCodigo);
@@ -331,7 +332,7 @@ public class ProductoTest {
 
     /**
      * Test getStock getter method.
-     *
+     * <p>
      * Verifies that getStock returns the correct stock value.
      */
     @Test
@@ -341,7 +342,7 @@ public class ProductoTest {
         int expectedStock = 10;
 
         // Act
-        int actualStock = producto.getStock();
+        int actualStock = product.getStock();
 
         // Assert
         assertEquals(expectedStock, actualStock);
@@ -351,7 +352,7 @@ public class ProductoTest {
 
     /**
      * Test changeStock method with positive value (adding stock).
-     *
+     * <p>
      * Verifies that changeStock correctly increases the stock
      * when given a positive number.
      */
@@ -359,20 +360,20 @@ public class ProductoTest {
     @DisplayName("changeStock with positive value should increase stock")
     public void testChangeStockWithPositiveValue() {
         // Arrange
-        int initialStock = producto.getStock(); // 10
+        int initialStock = product.getStock(); // 10
         int addStock = 5;
         int expectedStock = initialStock + addStock; // 15
 
         // Act
-        producto.changeStock(addStock);
+        product.changeStock(addStock);
 
         // Assert
-        assertEquals(expectedStock, producto.getStock());
+        assertEquals(expectedStock, product.getStock());
     }
 
     /**
      * Test changeStock method with negative value (removing stock).
-     *
+     * <p>
      * Verifies that changeStock correctly decreases the stock
      * when given a negative number (sale or adjustment).
      */
@@ -380,20 +381,20 @@ public class ProductoTest {
     @DisplayName("changeStock with negative value should decrease stock")
     public void testChangeStockWithNegativeValue() {
         // Arrange
-        int initialStock = producto.getStock(); // 10
+        int initialStock = product.getStock(); // 10
         int removeStock = -3;
         int expectedStock = initialStock + removeStock; // 7
 
         // Act
-        producto.changeStock(removeStock);
+        product.changeStock(removeStock);
 
         // Assert
-        assertEquals(expectedStock, producto.getStock());
+        assertEquals(expectedStock, product.getStock());
     }
 
     /**
      * Test changeStock prevents negative stock.
-     *
+     * <p>
      * Verifies that changeStock does not allow the stock to go below zero
      * (business rule: stock cannot be negative).
      */
@@ -401,19 +402,19 @@ public class ProductoTest {
     @DisplayName("changeStock should prevent negative stock")
     public void testChangeStockPreventNegativeStock() {
         // Arrange
-        int initialStock = producto.getStock(); // 10
+        int initialStock = product.getStock(); // 10
         int removeStock = -15; // Try to remove more than available
 
         // Act
-        producto.changeStock(removeStock);
+        product.changeStock(removeStock);
 
         // Assert - Stock should remain unchanged (method returns early)
-        assertEquals(initialStock, producto.getStock());
+        assertEquals(initialStock, product.getStock());
     }
 
     /**
      * Test changeStock with value that would result in exactly zero stock.
-     *
+     * <p>
      * Verifies that changeStock allows stock to reach exactly zero.
      */
     @Test
@@ -421,7 +422,7 @@ public class ProductoTest {
     public void testChangeStockToZero() {
         // Arrange
         int initialStock = 5;
-        Producto p = new Producto("PROD0001", "Test", 10.0, initialStock);
+        Product p = new Product("PROD0001", "Test", 10.0, initialStock);
         int removeStock = -5;
 
         // Act
@@ -433,7 +434,7 @@ public class ProductoTest {
 
     /**
      * Test changeStock with zero value.
-     *
+     * <p>
      * Verifies that changeStock correctly handles zero change
      * (stock should remain unchanged).
      */
@@ -441,20 +442,20 @@ public class ProductoTest {
     @DisplayName("changeStock with zero value should not modify stock")
     public void testChangeStockWithZero() {
         // Arrange
-        int initialStock = producto.getStock();
+        int initialStock = product.getStock();
 
         // Act
-        producto.changeStock(0);
+        product.changeStock(0);
 
         // Assert
-        assertEquals(initialStock, producto.getStock());
+        assertEquals(initialStock, product.getStock());
     }
 
     // ==================== TOSTRING AND COMPARETO TESTS ====================
 
     /**
      * Test toString method returns proper CSV format.
-     *
+     * <p>
      * Verifies that toString produces the correct CSV format string:
      * codigo;descripcion;precio;stock;
      */
@@ -465,7 +466,7 @@ public class ProductoTest {
         String expectedFormat = "CC112244A;Portatil Asus AST-45;899.99;10;";
 
         // Act
-        String result = producto.toString();
+        String result = product.toString();
 
         // Assert
         assertEquals(expectedFormat, result);
@@ -473,7 +474,7 @@ public class ProductoTest {
 
     /**
      * Test compareTo method with different descriptions (alphabetical order).
-     *
+     * <p>
      * Verifies that compareTo correctly compares products based on
      * their descriptions (case-insensitive).
      */
@@ -481,8 +482,8 @@ public class ProductoTest {
     @DisplayName("compareTo should compare descriptions in alphabetical order")
     public void testCompareToAlphabetical() {
         // Arrange
-        Producto p1 = new Producto("PROD0001", "Apple", 100.0, 5);
-        Producto p2 = new Producto("PROD0002", "Banana", 200.0, 3);
+        Product p1 = new Product("PROD0001", "Apple", 100.0, 5);
+        Product p2 = new Product("PROD0002", "Banana", 200.0, 3);
 
         // Act
         int result = p1.compareTo(p2);
@@ -493,15 +494,15 @@ public class ProductoTest {
 
     /**
      * Test compareTo method with identical descriptions.
-     *
+     * <p>
      * Verifies that compareTo returns 0 when descriptions are identical.
      */
     @Test
     @DisplayName("compareTo should return 0 for equal descriptions")
     public void testCompareToEqual() {
         // Arrange
-        Producto p1 = new Producto("PROD0001", "Same Product", 100.0, 5);
-        Producto p2 = new Producto("PROD0002", "Same Product", 200.0, 3);
+        Product p1 = new Product("PROD0001", "Same Product", 100.0, 5);
+        Product p2 = new Product("PROD0002", "Same Product", 200.0, 3);
 
         // Act
         int result = p1.compareTo(p2);
@@ -512,15 +513,15 @@ public class ProductoTest {
 
     /**
      * Test compareTo method is case-insensitive.
-     *
+     * <p>
      * Verifies that compareTo ignores case differences in descriptions.
      */
     @Test
     @DisplayName("compareTo should be case-insensitive")
     public void testCompareToIgnoreCase() {
         // Arrange
-        Producto p1 = new Producto("PROD0001", "apple", 100.0, 5);
-        Producto p2 = new Producto("PROD0002", "APPLE", 200.0, 3);
+        Product p1 = new Product("PROD0001", "apple", 100.0, 5);
+        Product p2 = new Product("PROD0002", "APPLE", 200.0, 3);
 
         // Act
         int result = p1.compareTo(p2);
@@ -531,7 +532,7 @@ public class ProductoTest {
 
     /**
      * Test compareTo method with reverse alphabetical order.
-     *
+     * <p>
      * Verifies that compareTo correctly identifies when first product
      * comes after second in alphabetical order.
      */
@@ -539,8 +540,8 @@ public class ProductoTest {
     @DisplayName("compareTo should return positive when first product comes after")
     public void testCompareToReverseOrder() {
         // Arrange
-        Producto p1 = new Producto("PROD0001", "Zebra", 100.0, 5);
-        Producto p2 = new Producto("PROD0002", "Apple", 200.0, 3);
+        Product p1 = new Product("PROD0001", "Zebra", 100.0, 5);
+        Product p2 = new Product("PROD0002", "Apple", 200.0, 3);
 
         // Act
         int result = p1.compareTo(p2);
@@ -553,7 +554,7 @@ public class ProductoTest {
 
     /**
      * Test getCsvFormat static method.
-     *
+     * <p>
      * Verifies that getCsvFormat returns the correct CSV format header.
      */
     @Test
@@ -563,7 +564,7 @@ public class ProductoTest {
         String expectedFormat = "codigoProducto;descripcion;precio;stock";
 
         // Act
-        String result = Producto.getCsvFormat();
+        String result = Product.getCsvFormat();
 
         // Assert
         assertEquals(expectedFormat, result);
@@ -573,35 +574,35 @@ public class ProductoTest {
 
     /**
      * Integration test: Create product, modify properties, and verify state.
-     *
+     * <p>
      * This test verifies that multiple operations on a product work
      * together correctly.
      */
     @Test
     @DisplayName("Integration test: Create, modify, and verify product state")
-    public void testProductoIntegration() {
+    public void testProductIntegration() {
         // Arrange
-        String codigo = "PROD0010";
+        String productCode = "PROD0010";
         String descripcion = "Integration Test Product";
         double precio = 249.99;
         int stock = 20;
 
         // Act
-        Producto p = new Producto(codigo, descripcion, precio, stock);
-        p.setPrecio(299.99);
+        Product p = new Product(productCode, descripcion, precio, stock);
+        p.setPrice(299.99);
         p.changeStock(-5);
-        p.setDescripcion("Modified Description");
+        p.setDescription("Modified Description");
 
         // Assert
-        assertEquals(codigo, p.getCodigoProducto());
-        assertEquals("Modified Description", p.getDescripcion());
-        assertEquals(299.99, p.getPrecio(), 0.01);
+        assertEquals(productCode, p.getProductCode());
+        assertEquals("Modified Description", p.getDescription());
+        assertEquals(299.99, p.getPrice(), 0.01);
         assertEquals(15, p.getStock());
     }
 
     /**
      * Test multiple price updates in sequence.
-     *
+     * <p>
      * Verifies that multiple valid price updates work correctly
      * and each update overrides the previous one.
      */
@@ -609,38 +610,38 @@ public class ProductoTest {
     @DisplayName("Multiple price updates should work correctly")
     public void testMultiplePriceUpdates() {
         // Arrange & Act
-        producto.setPrecio(100.0);
-        assertEquals(100.0, producto.getPrecio(), 0.01);
+        product.setPrice(100.0);
+        assertEquals(100.0, product.getPrice(), 0.01);
 
-        producto.setPrecio(200.0);
-        assertEquals(200.0, producto.getPrecio(), 0.01);
+        product.setPrice(200.0);
+        assertEquals(200.0, product.getPrice(), 0.01);
 
-        producto.setPrecio(0.0);
-        assertEquals(0.0, producto.getPrecio());
+        product.setPrice(0.0);
+        assertEquals(0.0, product.getPrice());
 
         // Assert - All assertions passed above
     }
 
     /**
      * Test multiple stock changes in sequence.
-     *
+     * <p>
      * Verifies that multiple stock changes accumulate correctly.
      */
     @Test
     @DisplayName("Multiple stock changes should accumulate correctly")
     public void testMultipleStockChanges() {
         // Arrange
-        int initialStock = producto.getStock(); // 10
+        int initialStock = product.getStock(); // 10
 
         // Act
-        producto.changeStock(5); // Now 15
-        assertEquals(15, producto.getStock());
+        product.changeStock(5); // Now 15
+        assertEquals(15, product.getStock());
 
-        producto.changeStock(-3); // Now 12
-        assertEquals(12, producto.getStock());
+        product.changeStock(-3); // Now 12
+        assertEquals(12, product.getStock());
 
-        producto.changeStock(8); // Now 20
-        assertEquals(20, producto.getStock());
+        product.changeStock(8); // Now 20
+        assertEquals(20, product.getStock());
 
         // Assert - All assertions passed above
     }

@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hotguy.warehouse13.databinding.ItemListBinding;
-import com.hotguy.warehouse13.model.Producto;
+import com.hotguy.warehouse13.model.Product;
 
 
 public class ProductsRVHolder extends RecyclerView.ViewHolder {
@@ -26,10 +26,10 @@ public class ProductsRVHolder extends RecyclerView.ViewHolder {
         this.txtStock = binding.txtStock;
     }
 
-    public void loadData(Producto p) {
-        txtCode.append(": " + p.getCodigoProducto());
-        txtDesc.append(": " + p.getDescripcion());
-        txtPrice.append(": " + p.getPrecio());
+    public void loadData(Product p) {
+        txtCode.append(": " + p.getProductCode());
+        txtDesc.append(": " + p.getDescription());
+        txtPrice.append(": " + p.getPrice());
         txtStock.append(": " + p.getStock());
 
     }
