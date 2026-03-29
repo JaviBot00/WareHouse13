@@ -1,6 +1,8 @@
 package com.hotguy.warehouse13.controller;
 
-
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.hotguy.warehouse13.model.Producto;
 import com.hotguy.warehouse13.model.ProductoPerecedero;
 
@@ -26,12 +28,16 @@ public class Controlador {
         return instance;
     }
 
-    public boolean addProducto(boolean perecedero, String csvProduct) {
+//    public void saveData() {
+//        DataAccess.saveData(listaDeProductosInicial);
+//    }
+
+    public boolean addProducto(boolean perecedero, String jsonProduct) {
         Producto p;
         if (perecedero) {
-            p = parseProductPerecedero(csvProduct);
+            p = parseProductPerecedero(jsonProduct);
         } else {
-            p = parseProduct(csvProduct);
+            p = parseProduct(jsonProduct);
         }
         if (p == null)
             return false;
@@ -42,6 +48,15 @@ public class Controlador {
             }
         }
         return listaDeProductosInicial.add(p);
+    }
+
+    public Producto getProductoByCodigo(String codigoProducto) {
+        for (Producto p : listaDeProductosInicial) {
+            if (p.getCodigoProducto().equalsIgnoreCase(codigoProducto)) {
+                return p;
+            }
+        }
+        return null;
     }
 
     public boolean editStockForProducto(String codigoProducto, int stock) {
@@ -59,16 +74,11 @@ public class Controlador {
     }
 
     public String listProductos() {
-        StringBuilder sb = new StringBuilder();
         Collections.sort(listaDeProductosInicial);
-
-        for (Producto p : listaDeProductosInicial) {
-            sb.append(p).append("\n");
-        }
-        return ProductoPerecedero.getCsvFormat() + "\n" + sb;
+        return new Gson().toJson(listaDeProductosInicial);
     }
 
-    public boolean retirarProducto(String codigoProducto) {
+    public boolean retirarProduct(String codigoProducto) {
         for (Producto p : listaDeProductosInicial) {
             if (p.getCodigoProducto().equalsIgnoreCase(String.valueOf(codigoProducto))) {
                 listaDeProductosRetirados.add(p);
@@ -78,72 +88,63 @@ public class Controlador {
         return false;
     }
 
-    public String listProductoSinStock() {
-        StringBuilder sb = new StringBuilder();
+    public String listProductsSinStock() {
         Collections.sort(listaDeProductosInicial);
-
-        for (Producto p : listaDeProductosInicial) {
-            if (p.getStock() == 0) {
-                sb.append(p).append("\n");
-            }
-        }
-        return ProductoPerecedero.getCsvFormat() + "\n" + sb;
+        return new Gson().toJson(listaDeProductosInicial.stream().filter(p -> p.getStock() == 0));
     }
 
-    public String listProductosCaducados() {
-        StringBuilder sb = new StringBuilder();
+    public String listProductsCaducados() {
         Collections.sort(listaDeProductosInicial);
-
         LocalDate hoy = LocalDate.now();
-
-        for (Producto pp : listaDeProductosInicial) {
-            if (pp instanceof ProductoPerecedero perecedero) {
-                if (perecedero.getFechaCaducidad().isBefore(hoy)) {
-                    sb.append(perecedero).append("\n");
-                }
-            }
-        }
-        return ProductoPerecedero.getCsvFormat() + "\n" + sb;
+        return new Gson().toJson(listaDeProductosInicial.stream()
+            .filter(p -> p instanceof ProductoPerecedero)
+            .filter(p -> ((ProductoPerecedero) p).getFechaCaducidad().isBefore(hoy)));
     }
 
     public String listProductosBtwPrecios(double min, double max) {
-        StringBuilder sb = new StringBuilder();
         Collections.sort(listaDeProductosInicial);
-
-        for (Producto p : listaDeProductosInicial) {
-            if (p.getPrecio() >= min && p.getPrecio() <= max) {
-                sb.append(p).append("\n");
-            }
-        }
-        return ProductoPerecedero.getCsvFormat() + "\n" + sb;
+        return new Gson().toJson(listaDeProductosInicial.stream().filter(p -> p.getPrecio() >= min && p.getPrecio() <= max));
     }
 
     public String listProductosRetirados() {
-        StringBuilder sb = new StringBuilder();
         Collections.sort(listaDeProductosRetirados);
-
-        for (Producto p : listaDeProductosRetirados) {
-            sb.append(p).append("\n");
-        }
-        return ProductoPerecedero.getCsvFormat() + "\n" + sb;
+        return new Gson().toJson(listaDeProductosRetirados);
     }
 
-    private Producto parseProduct(String csvProduct) {
-        if (csvProduct == null)
-            return null;
-        String[] dataset = csvProduct.split(";");
-        if (dataset.length < 4)
-            return null;
-        return new Producto(dataset[0], dataset[1], Double.parseDouble(dataset[2]), Integer.parseInt(dataset[3]));
+    private Producto parseProduct(String jsonProduct) {
+        if (jsonProduct == null || jsonProduct.isEmpty()) return null;
+
+        JsonObject jsonObject = JsonParser.parseString(jsonProduct).getAsJsonObject();
+        if (jsonObject.isEmpty()) return null;
+
+        // Limpio y explícito
+        if (!jsonObject.has("codigoProducto") || !jsonObject.has("descripcion") ||
+            !jsonObject.has("precio") || !jsonObject.has("stock")) return null;
+
+        return new Producto(
+            jsonObject.get("codigoProducto").getAsString(),
+            jsonObject.get("descripcion").getAsString(),
+            jsonObject.get("precio").getAsDouble(),
+            jsonObject.get("stock").getAsInt()
+        );
     }
 
-    private ProductoPerecedero parseProductPerecedero(String csvProduct) {
-        if (csvProduct == null)
-            return null;
-        String[] dataset = csvProduct.split(";");
-        if (dataset.length < 5)
-            return null;
-        return new ProductoPerecedero(dataset[0], dataset[1], Double.parseDouble(dataset[2]),
-            Integer.parseInt(dataset[3]), dataset[4]);
+    private ProductoPerecedero parseProductPerecedero(String jsonProduct) {
+        if (jsonProduct == null || jsonProduct.isEmpty()) return null;
+
+        JsonObject jsonObject = JsonParser.parseString(jsonProduct).getAsJsonObject();
+        if (jsonObject.isEmpty()) return null;
+
+        // Limpio y explícito
+        if (!jsonObject.has("codigoProducto") || !jsonObject.has("descripcion") ||
+            !jsonObject.has("precio") || !jsonObject.has("stock") || !jsonObject.has("fechaCaducidad")) return null;
+
+        return new ProductoPerecedero(
+            jsonObject.get("codigoProducto").getAsString(),
+            jsonObject.get("descripcion").getAsString(),
+            jsonObject.get("precio").getAsDouble(),
+            jsonObject.get("stock").getAsInt(),
+            jsonObject.get("fechaCaducidad").getAsString()
+        );
     }
 }

@@ -1,7 +1,13 @@
 package com.hotguy.warehouse13.view;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.hotguy.warehouse13.controller.Controlador;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 
@@ -67,14 +73,8 @@ import java.util.Scanner;
  *
  */
 public class Main {
-    // Clase principal de la vista
-
-    // private static Controlador controller = Controlador.getSingleton();
 
     public static void main(String[] args) {
-        // Poner aquí el bucle para ejecutar mostrar menú, escoger opción y ejecutarla
-        // la opción
-        // Hasta pulsar opción 0 que es salir
         System.out.println("Bienvenido al sistema de gestión del Almacén 13.");
 
         boolean onGoing = true;
@@ -141,19 +141,17 @@ public class Main {
     }
 
     public static void addProducto() {
+        Map<String, Object> data = new LinkedHashMap<>();
         System.out.println("Introduce el producto a añadir: ");
         boolean isPerecedero = requestData("¿Es un producto perecedero? (s/n): ").equalsIgnoreCase("s");
-        String codigoProducto = requestData("Código del producto: ");
-        String descripcion = requestData("Descripción del producto: ");
-        double precio = readDouble("Precio del producto: ");
-        int stock = readInt("Stock del producto: ");
-        String fechaCaducidad = null;
+        data.put("codigoProducto", requestData("Código del producto: "));
+        data.put("descripcion", requestData("Descripción del producto: "));
+        data.put("precio", readDouble("Precio del producto: "));
+        data.put("stock", readInt("Stock del producto: "));
         if (isPerecedero) {
-            fechaCaducidad = requestData("Fecha de caducidad (AAAAMMDD): ");
+            data.put("fechaCaducidad", requestData("Fecha de caducidad (AAAAMMDD): "));
         }
-        String csvProduct = codigoProducto + ";" + descripcion + ";" + precio + ";" + stock
-            + (isPerecedero ? ";" + fechaCaducidad : "");
-        if (Controlador.getSingleton().addProducto(isPerecedero, csvProduct)) {
+        if (Controlador.getSingleton().addProducto(isPerecedero, new Gson().toJson(data))) {
             System.out.println("Producto añadido correctamente.");
         } else {
             System.out.println("No se ha podido añadir el producto. Revisa el formato de los datos introducidos.");
@@ -171,14 +169,12 @@ public class Main {
     }
 
     public static void listProductos() {
-        String allProductsData = Controlador.getSingleton().listProductos();
         System.out.println("Listado of Productos:\n");
-        imprimirDatos(allProductsData);
+        imprimirDatos(Controlador.getSingleton().listProductos());
     }
 
     public static void retirarProducto() {
-        String codigoProducto = requestData("Código del producto a retirar: ");
-        if (Controlador.getSingleton().retirarProducto(codigoProducto)) {
+        if (Controlador.getSingleton().retirarProduct(requestData("Código del producto a retirar: "))) {
             System.out.println("Producto retirado correctamente.");
         } else {
             System.out.println("No se ha encontrado el producto con el código indicado.");
@@ -186,45 +182,58 @@ public class Main {
     }
 
     public static void listProductosSinStock() {
-        String productosSinStockData = Controlador.getSingleton().listProductoSinStock();
         System.out.println("Listado of Productos sin stock:\n");
-        imprimirDatos(productosSinStockData);
+        imprimirDatos(Controlador.getSingleton().listProductsSinStock());
     }
 
     public static void listProductosCaducados() {
-        String productosCaducadosData = Controlador.getSingleton().listProductosCaducados();
         System.out.println("Listado of Productos caducados:\n");
-        imprimirDatos(productosCaducadosData);
+        imprimirDatos(Controlador.getSingleton().listProductsCaducados());
     }
 
     public static void listProductosBtwPrecios() {
-        double minPrice = readInt("Precio mínimo: ");
-        double maxPrice = readInt("Precio máximo: ");
-        String productosBtwPreciosData = Controlador.getSingleton().listProductosBtwPrecios(minPrice, maxPrice);
+        double minPrice = readDouble("Precio mínimo: ");
+        double maxPrice = readDouble("Precio máximo: ");
         System.out.println("Listado of Productos entre " + minPrice + " y " + maxPrice + ":\n");
-        imprimirDatos(productosBtwPreciosData);
+        imprimirDatos(Controlador.getSingleton().listProductosBtwPrecios(minPrice, maxPrice));
     }
 
     public static void listarProductosRetirados() {
-        String productosRetiradosData = Controlador.getSingleton().listProductosRetirados();
         System.out.println("Listado of Productos retirados:\n");
-        imprimirDatos(productosRetiradosData);
+        imprimirDatos(Controlador.getSingleton().listProductosRetirados());
     }
 
     private static void imprimirDatos(String dataset) {
-        String[] filas = dataset.split("\n");
-        for (String f : filas) {
-            imprimirColumnas(f);
+        if (dataset == null || dataset.isEmpty()) return;
+
+        JsonArray jsonArray = JsonParser.parseString(dataset).getAsJsonArray();
+        if (jsonArray.isEmpty()) return;
+
+        // Cabecera con las claves del primer elemento
+        JsonObject primero = jsonArray.get(0).getAsJsonObject();
+        for (String clave : primero.keySet()) {
+            System.out.printf("| %-20.20s ", clave);
         }
+//        System.out.println("|");
+//        for (int i = 0; i < primero.keySet().size(); i++) {
+//            System.out.print("-----------------------");
+//        }
+//        System.out.println();
+
+        // Datos — todos los elementos
+        for (int i = 0; i < jsonArray.size(); i++) {
+            imprimirColumnas(jsonArray.get(i).getAsJsonObject());
+        }
+
         System.out.println("\n-------------- END --------------\n");
     }
 
-    private static void imprimirColumnas(String line) {
-        String[] columnas = line.split(";");
-        for (String c : columnas) {
-            System.out.printf("| %-20.20s ", c);
+    private static void imprimirColumnas(JsonObject line) {
+        for (String clave : line.keySet()) {
+            System.out.printf("| %-20.20s ", line.get(clave));
         }
         System.out.println();
+//        System.out.println("|");
     }
 
     private static int getOptionMenu() {

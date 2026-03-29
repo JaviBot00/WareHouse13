@@ -1,6 +1,5 @@
 package com.hotguy.warehouse13.controller;
 
-
 import com.hotguy.warehouse13.model.Producto;
 
 import java.util.ArrayList;
@@ -24,28 +23,11 @@ public class DataAccess {
     public static List<Producto> loadData() {
         List<Producto> listaProductosBase = new ArrayList<>();
 
-        // poner aquí el algoritmo para sacar del string data todos los productos que
-        // almacena
         String[] lineas = data.split("\n");
         for (String ln : lineas) {
-            String[] parejas = ln.split(";");
-            String codP = "";
-            String desc = "";
-            double precio = 0;
-            int stock = 0;
-            for (String pr : parejas) {
-                String[] datoBruto = pr.split("=");
-                if (datoBruto[0].equals("codigoProducto"))
-                    codP = datoBruto[1];
-                if (datoBruto[0].equals("descripcion"))
-                    desc = datoBruto[1];
-                if (datoBruto[0].equals("precio"))
-                    precio = Double.parseDouble(datoBruto[1]);
-                if (datoBruto[0].equals("stock"))
-                    stock = Integer.parseInt(datoBruto[1]);
-            }
-            listaProductosBase.add(new Producto(codP, desc, precio, stock));
+            listaProductosBase.add(Producto.cargarDesdeCSVPlus(ln));
         }
+
 
         return listaProductosBase;
     }
