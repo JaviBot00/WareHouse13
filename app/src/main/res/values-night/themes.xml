@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    ╔══════════════════════════════════════════════════════╗
+    ║  res/values-night/themes.xml                         ║
+    ║  MODO OSCURO — Android lo carga automáticamente      ║
+    ║  cuando el sistema está en modo noche                ║
+    ║  Los colores vienen de res/values-night/colors.xml   ║
+    ╚══════════════════════════════════════════════════════╝
+-->
+<resources>
+
+    <!--
+        En Material3 DayNight, el sistema ya lee values-night/ automáticamente.
+        Aquí solo necesitamos sobreescribir lo que difiere del modo claro.
+        Los colores ya vienen de values-night/colors.xml.
+    -->
+
+    <style name="Base.Theme.WareHouse13" parent="Theme.Material3.DayNight.NoActionBar">
+
+        <!-- === Colores principales === -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
+        <item name="colorOnPrimary">@color/colorOnPrimary</item>
+
+        <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="colorOnSecondary">@color/colorOnSecondary</item>
+
+        <item name="colorTertiary">@color/colorAccent</item>
+        <item name="colorOnTertiary">@color/colorOnAccent</item>
+
+        <!-- === Superficies y fondo === -->
+        <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="colorSurface">@color/colorSurface</item>
+        <item name="colorOnSurface">@color/colorOnSurface</item>
+        <item name="colorOnBackground">@color/colorOnBackground</item>
+
+        <!-- === Texto === -->
+        <item name="android:textColorPrimary">@color/colorTextPrimary</item>
+        <item name="android:textColorSecondary">@color/colorTextSecondary</item>
+        <item name="android:textColorHint">@color/colorTextSecondary</item>
+
+        <!-- === Barras del sistema === -->
+        <item name="android:statusBarColor">@color/colorStatusBar</item>
+        <item name="android:navigationBarColor">@color/colorNavBar</item>
+
+        <!-- En modo oscuro, iconos de sistema en claro -->
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+
+        <!-- === AppBar / Toolbar === -->
+        <item name="colorControlNormal">@color/colorOnPrimary</item>
+        <item name="colorControlHighlight">@color/red_forge_light</item>
+
+        <!-- === BottomNavigationView === -->
+        <item name="bottomNavigationStyle">@style/Widget.WareHouse13.BottomNavigation</item>
+
+        <!-- === Error === -->
+        <item name="colorError">@color/colorError</item>
+        <item name="colorOnError">@color/colorOnError</item>
+
+        <!-- === Ventana === -->
+        <item name="android:windowBackground">@color/colorBackground</item>
+        <item name="android:enforceNavigationBarContrast">false</item>
+
+    </style>
+
+    <style name="Theme.WareHouse13" parent="Base.Theme.WareHouse13" />
+
+    <style name="Theme.WareHouse13.Surface" parent="Base.Theme.WareHouse13">
+        <item name="android:windowBackground">@color/colorSurface</item>
+    </style>
+
+    <!-- BottomNavigationView — indicador activo con rojo más luminoso en dark -->
+    <style name="Widget.WareHouse13.BottomNavigation" parent="Widget.Material3.BottomNavigationView">
+        <item name="android:background">@color/colorNavBar</item>
+        <item name="itemIconTint">@color/bottom_nav_item_color</item>
+        <item name="itemTextColor">@color/bottom_nav_item_color</item>
+        <item name="itemActiveIndicatorStyle">@style/Widget.WareHouse13.BottomNavigation.ActiveIndicator</item>
+    </style>
+
+    <style name="Widget.WareHouse13.BottomNavigation.ActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@color/red_forge_light</item>
+        <item name="android:alpha">0.20</item>
+    </style>
+
+    <style name="Widget.WareHouse13.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="titleTextColor">@color/colorOnPrimary</item>
+        <item name="subtitleTextColor">@color/colorOnPrimary</item>
+    </style>
+
+</resources>

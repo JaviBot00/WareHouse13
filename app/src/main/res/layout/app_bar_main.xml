@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    MEJORAS respecto al original:
+    1. android:background en Toolbar → usa ?attr/colorPrimary en vez de @color/colorPrimary
+       (así funciona aunque se sobreescriba el theme en una Activity concreta)
+    2. imgProfile: android:background → ?attr/colorPrimary en vez de "#000000" hardcodeado
+    3. riv_border_color → usa ?attr/colorOnPrimary via resource en vez de #FFFFFF hardcodeado
+    4. toolbar_title textColor → usa ?attr/colorOnPrimary en vez de @android:color/white
+    5. AppBarLayout con elevation para diferenciarla del contenido en modo claro
+-->
+<com.google.android.material.appbar.AppBarLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/colorPrimary"
+    app:elevation="4dp">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        style="@style/Widget.WareHouse13.Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:contentInsetStart="16dp">
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/imgProfile"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_marginEnd="12dp"
+            android:background="?attr/colorPrimaryVariant"
+            android:scaleType="centerCrop"
+            android:src="@drawable/discord_neon"
+            app:riv_border_color="?attr/colorOnPrimary"
+            app:riv_border_width="1.5dp"
+            app:riv_corner_radius="100dip"
+            app:riv_mutate_background="true" />
+
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/app_name"
+            android:textColor="?attr/colorOnPrimary"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.02" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+</com.google.android.material.appbar.AppBarLayout>

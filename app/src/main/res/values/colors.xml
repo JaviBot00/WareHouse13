@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ==========================================
+         Colores base del sistema (no usar directamente en layouts)
+         ========================================== -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Rojo forjado -->
+    <color name="red_forge_light">#C0282A</color>
+    <color name="red_forge_dark">#8C1F21</color>
+    <color name="red_forge_dim">#6B1618</color>
+
+    <!-- Ámbar metálico (accent) -->
+    <color name="amber_steel">#D4870F</color>
+    <color name="amber_steel_dim">#A8610A</color>
+    <color name="amber_steel_surface">#FFF4E0</color>
+    <color name="amber_steel_surface_dark">#2A2318</color>
+
+    <!-- Superficies y fondos -->
+    <color name="surface_warm_slate">#F0EDEA</color>   <!-- fondo claro, NO blanco puro -->
+    <color name="surface_card_light">#FFFFFF</color>
+    <color name="surface_charcoal">#1A1A1E</color>     <!-- fondo oscuro -->
+    <color name="surface_card_dark">#26252B</color>    <!-- tarjetas modo oscuro -->
+    <color name="surface_sheet_dark">#2F2E35</color>   <!-- bottom sheets, secundario -->
+
+    <!-- Grafito (toolbar secundario / botones) -->
+    <color name="graphite">#3A3540</color>
+    <color name="graphite_light">#4E4A56</color>
+
+    <!-- Barra de navegación -->
+    <color name="nav_bar_light">#3A3540</color>
+    <color name="nav_bar_dark">#111114</color>
+
+    <!-- Texto -->
+    <color name="text_primary_light">#1A1A1E</color>
+    <color name="text_primary_dark">#E8E4DF</color>
+    <color name="text_secondary_light">#5C5860</color>
+    <color name="text_secondary_dark">#A8A4A0</color>
+    <color name="text_on_primary">#F0EDEA</color>
+
+    <!-- ==========================================
+         Tokens semánticos — MODO CLARO
+         Estos son los que usa themes.xml
+         ========================================== -->
+    <color name="colorPrimary">@color/red_forge_light</color>
+    <color name="colorPrimaryVariant">@color/red_forge_dim</color>
+    <color name="colorOnPrimary">@color/text_on_primary</color>
+
+    <color name="colorSecondary">@color/graphite</color>
+    <color name="colorOnSecondary">@color/text_on_primary</color>
+
+    <color name="colorAccent">@color/amber_steel</color>
+    <color name="colorOnAccent">#1A1A1E</color>
+
+    <color name="colorBackground">@color/surface_warm_slate</color>
+    <color name="colorSurface">@color/surface_card_light</color>
+    <color name="colorOnBackground">@color/text_primary_light</color>
+    <color name="colorOnSurface">@color/text_primary_light</color>
+
+    <color name="colorTextPrimary">@color/text_primary_light</color>
+    <color name="colorTextSecondary">@color/text_secondary_light</color>
+
+    <color name="colorNavBar">@color/nav_bar_light</color>
+    <color name="colorStatusBar">@color/red_forge_light</color>
+
+    <!-- Estados funcionales -->
+    <color name="colorError">#D32F2F</color>
+    <color name="colorOnError">#FFFFFF</color>
+    <color name="colorSuccess">#2E7D32</color>
+    <color name="colorWarning">@color/amber_steel</color>
+
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WareHouse13</string>
+    <string name="description">Descripcion</string>
+    <string name="price">Precio</string>
+    <string name="stock">Stock</string>
+    <string name="add">Añadir</string>
+    <string name="list">Listar</string>
+    <string name="settings">Ajustes</string>
+    <string name="code">Codigo</string>
+</resources>

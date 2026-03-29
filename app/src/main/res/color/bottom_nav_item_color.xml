@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    res/color/bottom_nav_item_color.xml
+    Controla el color de iconos y texto del BottomNavigationView.
+    - Seleccionado → accent (ámbar metálico)
+    - No seleccionado → texto secundario semi-transparente
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:color="@color/colorAccent"
+        android:state_checked="true" />
+    <item
+        android:alpha="0.6"
+        android:color="@color/colorOnPrimary" />
+</selector>

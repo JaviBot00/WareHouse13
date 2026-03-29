@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ==========================================
+         Tokens semánticos — MODO OSCURO
+         Solo redefinir los que cambian.
+         Los colores base (red_forge_*, amber_steel*, etc.)
+         ya están en values/colors.xml y no cambian.
+         ========================================== -->
+
+    <color name="colorPrimary">@color/red_forge_dark</color>
+    <color name="colorPrimaryVariant">@color/red_forge_light</color>
+    <color name="colorOnPrimary">@color/text_on_primary</color>
+
+    <color name="colorSecondary">@color/surface_sheet_dark</color>
+    <color name="colorOnSecondary">@color/text_primary_dark</color>
+
+    <color name="colorAccent">@color/amber_steel</color>
+    <color name="colorOnAccent">#1A1A1E</color>
+
+    <color name="colorBackground">@color/surface_charcoal</color>
+    <color name="colorSurface">@color/surface_card_dark</color>
+    <color name="colorOnBackground">@color/text_primary_dark</color>
+    <color name="colorOnSurface">@color/text_primary_dark</color>
+
+    <color name="colorTextPrimary">@color/text_primary_dark</color>
+    <color name="colorTextSecondary">@color/text_secondary_dark</color>
+
+    <color name="colorNavBar">@color/nav_bar_dark</color>
+    <color name="colorStatusBar">@color/red_forge_dark</color>
+
+    <!-- Estados funcionales (mismo en ambos modos por contraste seguro) -->
+    <color name="colorError">#EF5350</color>
+    <color name="colorOnError">#1A1A1E</color>
+    <color name="colorSuccess">#66BB6A</color>
+    <color name="colorWarning">@color/amber_steel</color>
+
+</resources>

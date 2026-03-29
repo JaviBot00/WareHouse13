@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav1_add"
+        android:enabled="true"
+        android:icon="@drawable/add_24px"
+        android:title="@string/add"  />
+    <item
+        android:id="@+id/nav2_lists"
+        android:enabled="true"
+        android:icon="@drawable/format_list_bulleted_24px"
+        android:title="@string/list" />
+
+    <item
+        android:id="@+id/nav3_settings"
+        android:enabled="true"
+        android:icon="@drawable/settings_24px"
+        android:title="@string/settings" />
+</menu>
