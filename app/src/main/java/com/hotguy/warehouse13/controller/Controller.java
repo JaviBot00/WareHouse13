@@ -20,7 +20,7 @@ public class Controller {
     private static Controller instance;
 
     private Controller() {
-//        productList = DataAccess.loadData();
+        productList = new ArrayList<>();
         retiredProductList = new ArrayList<>();
     }
 
@@ -31,20 +31,24 @@ public class Controller {
         return instance;
     }
 
-    public void loadDataFromFile() {
-        productList = DataAccess.loadDataFromFile("./", "products.csv");
+    public void loadDataFromMemory() {
+        productList = DataAccess.loadData();
     }
 
-    public void loadDataFromFile(Context context) {
-        productList = DataAccess.loadDataFromFile(context, "products.csv");
+    public void loadDataFromFile(String path, String file) {
+        productList = DataAccess.loadDataFromFile(path, file);
     }
 
-    public void saveDataToFile() {
-        DataAccess.saveDataToFile("./", "products.csv", productList);
+    public void loadDataFromFile(Context context, String file) {
+        productList = DataAccess.loadDataFromFile(context, file);
     }
 
-    public void saveDataToFile(Context context) {
-        DataAccess.saveDataToFile(context, "products.csv", productList);
+    public void saveDataToFile(String path, String file, List<Product> list) {
+        DataAccess.saveDataToFile(path, file, list);
+    }
+
+    public void saveDataToFile(Context context, String file, List<Product> list) {
+        DataAccess.saveDataToFile(context, file, list);
     }
 
     public boolean addProduct(boolean perishable, String jsonProduct) {

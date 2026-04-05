@@ -1,6 +1,7 @@
 package com.hotguy.warehouse13.controller;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -105,7 +106,7 @@ public class DataAccess {
         try {
             return Files.readAllLines(new File(context.getFilesDir(), file).toPath());
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e("DataAccess", "Error loading file", e);
             return new ArrayList<>();
         }
     }
@@ -122,7 +123,7 @@ public class DataAccess {
         try {
             Files.write(new File(context.getFilesDir(), file).toPath(), lines.getBytes());
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e("DataAccess", "Error saving file", e);
         }
     }
 

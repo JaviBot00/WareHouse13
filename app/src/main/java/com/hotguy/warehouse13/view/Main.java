@@ -100,8 +100,9 @@ public class Main {
         System.out.println("- 6. Show expired products                             -");
         System.out.println("- 7. Show products between two prices                  -");
         System.out.println("- 8. Show withdrawn products                           -");
-        System.out.println("- 9. Load data from file                               -");
-        System.out.println("- 10. Save data from file                              -");
+        System.out.println("- 9. Load data from memory                             -");
+        System.out.println("- 10. Load data from file                               -");
+        System.out.println("- 11. Save data from file                              -");
         System.out.println("-                                                      -");
         System.out.println("-                                                      -");
         System.out.println("--------------------------------------------------------");
@@ -133,10 +134,13 @@ public class Main {
             case 8:
                 listWithdrawnProducts();
                 break;
-                case 9:
-                loadDataFromFile();
+            case 9:
+                loadDataFromMemory();
                 break;
             case 10:
+                loadDataFromFile();
+                break;
+            case 11:
                 saveDataToFile();
                 break;
             default:
@@ -207,13 +211,22 @@ public class Main {
         printData(Controller.getSingleton().listWithdrawnProducts());
     }
 
+    public static void loadDataFromMemory() {
+        Controller.getSingleton().loadDataFromMemory();
+        System.out.println("Data loaded successfully.");
+    }
+
     public static void loadDataFromFile() {
-        Controller.getSingleton().loadDataFromFile();
+        String path = requestData("Enter the path to the file: ");
+        String file = requestData("Enter the name of the file: ");
+        Controller.getSingleton().loadDataFromFile(path, file);
         System.out.println("Data loaded successfully.");
     }
 
     public static void saveDataToFile() {
-        Controller.getSingleton().saveDataToFile();
+        String path = requestData("Enter the path to the file: ");
+        String file = requestData("Enter the name of the file: ");
+        Controller.getSingleton().saveDataToFile(path, file, Controller.getSingleton().getList());
         System.out.println("Data saved successfully.");
     }
 
