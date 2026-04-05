@@ -1,34 +1,28 @@
 package com.hotguy.warehouse13.model;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class PerishableProduct extends Product {
 
-    private static final String CSV_FORMAT = "expiryDate";
-    private static final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
-    private LocalDate expiryDate; // YYYYMMDD
+    public static final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
+    private String expirationDate; // YYYYMMDD
 
     public PerishableProduct(String productCode, String description, double price, int stock,
-                             String expiryDateString) {
+                             String expirationDate) {
         super(productCode, description, price, stock);
-        this.expiryDate = LocalDate.parse(expiryDateString, FORMAT);
+        this.expirationDate = expirationDate;
     }
 
-    public static String getCsvFormat() {
-        return Product.getCsvFormat() + ";" + PerishableProduct.CSV_FORMAT;
+    public String getExpirationDate() {
+        return expirationDate;
     }
 
-    public LocalDate getExpiryDate() {
-        return expiryDate;
-    }
-
-    public void setExpiryDate(String expiryDateString) {
-        this.expiryDate = LocalDate.parse(expiryDateString, FORMAT);
+    public void setExpirationDate(String expirationDate) {
+        this.expirationDate = expirationDate;
     }
 
     @Override
     public String toString() {
-        return super.toString() + expiryDate + ";";
+        return super.toString() + expirationDate + ";";
     }
 }

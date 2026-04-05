@@ -2,8 +2,6 @@ package com.hotguy.warehouse13.model;
 
 public class Product implements Comparable<Product> {
 
-    private static final String CSV_FORMAT = "productCode;description;price;stock";
-
     private String productCode;
     private String description;
     private double price;
@@ -15,31 +13,6 @@ public class Product implements Comparable<Product> {
         this.description = description;
         this.price = price;
         this.stock = stock;
-    }
-
-    public static String getCsvFormat() {
-        return CSV_FORMAT;
-    }
-
-    public static Product loadFromCSVPlus(String data) {
-        String productCode = "";
-        String description = "";
-        double price = 0;
-        int stock = 0;
-
-        String[] pair = data.split(";");
-        for (String pr : pair) {
-            String[] value = pr.split("=");
-            if (value[0].equals("productCode"))
-                productCode = value[1];
-            if (value[0].equals("description"))
-                description = value[1];
-            if (value[0].equals("price"))
-                price = Double.parseDouble(value[1]);
-            if (value[0].equals("stock"))
-                stock = Integer.parseInt(value[1]);
-        }
-        return new Product(productCode, description, price, stock);
     }
 
     // Getters and Setters
