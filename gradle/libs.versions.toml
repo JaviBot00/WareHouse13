@@ -1,5 +1,5 @@
 [versions]
-agp = "9.2.0-alpha06"
+agp = "9.1.0-alpha05"
 gson = "2.13.2"
 mysqlConnectorJava = "8.0.33"
 roundedimageview = "2.3.0"
