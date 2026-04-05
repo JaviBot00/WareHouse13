@@ -7,8 +7,10 @@ import com.google.gson.JsonParser;
 import com.hotguy.warehouse13.controller.Controller;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 
 /**
@@ -47,13 +49,7 @@ import java.util.Scanner;
  * en forma de filas
  * pero sin tener la información de los atributos. Ejemplo:
  * Clase,Código Producto,Descripción,Precio,Stock,Caducidad
- * Producto,TECL5678X,Teclado mecánico RGB con switches rojos,89.99,45
- * Producto,RATN9012K,Ratón inalámbrico ergonómico con 5 botones,34.50,67
- * Producto,AURC3456L,Auriculares inalámbricos con cancelación de
- * ruido,129.99,23
- * Producto,WEBC7890P,Webcam Full HD 1080p con micrófono integrado,59.90,32
- * Producto,HUBB2345M,Hub USB 3.0 de 4 puertos con alimentación,24.75,56
- * Producto,INK55665F,Toner b/w genérico HP 8750,79.99,18,20260713
+ *
  * <p>
  * - En el ejemplo anterior, la última línea es una producto perecedero
  * <p>
@@ -149,7 +145,7 @@ public class Main {
         data.put("price", readDouble("Product price: "));
         data.put("stock", readInt("Product stock: "));
         if (isPerishable) {
-            data.put("expiryDate", requestData("Expiration date (YYYYMMDD): "));
+            data.put("expirationDate", requestData("Expiration date (YYYYMMDD): "));
         }
         if (Controller.getSingleton().addProduct(isPerishable, new Gson().toJson(data))) {
             System.out.println("Product added successfully.");
@@ -209,31 +205,42 @@ public class Main {
         JsonArray jsonArray = JsonParser.parseString(dataset).getAsJsonArray();
         if (jsonArray.isEmpty()) return;
 
-        // Header with the keys of first element
-        JsonObject primero = jsonArray.get(0).getAsJsonObject();
-        for (String clave : primero.keySet()) {
-            System.out.printf("| %-20.20s ", clave.toUpperCase());
+        // Header with the keys of all elements
+        Set<String> keys = new LinkedHashSet<>();
+        for (int i = 0; i < jsonArray.size(); i++) {
+            keys.addAll(jsonArray.get(i).getAsJsonObject().keySet());
         }
-//        System.out.println("|");
-//        for (int i = 0; i < primero.keySet().size(); i++) {
-//            System.out.print("-----------------------");
-//        }
-//        System.out.println();
+
+        printDelimiter(keys);
+
+        for (String k : keys) {
+            System.out.printf("| %-20.20s ", k.toUpperCase());
+        }
+        System.out.println("|");
+
+        printDelimiter(keys);
 
         // Data — all elements
         for (int i = 0; i < jsonArray.size(); i++) {
-            printColumns(jsonArray.get(i).getAsJsonObject());
+            printColumns(jsonArray.get(i).getAsJsonObject(), keys);
         }
 
         System.out.println("\n-------------- END --------------\n");
     }
 
-    private static void printColumns(JsonObject line) {
-        for (String clave : line.keySet()) {
-            System.out.printf("| %-20.20s ", line.get(clave));
+    private static void printColumns(JsonObject line, Set<String> keys) {
+        for (String clave : keys) {
+            String valor = line.has(clave) ? line.get(clave).getAsString() : "-";
+            System.out.printf("| %-20.20s ", valor);
         }
-        System.out.println();
-//        System.out.println("|");
+        System.out.println("|");
+    }
+
+    private static void printDelimiter(Set<String> keys) {
+        for (int i = 0; i < keys.size(); i++) {
+            System.out.print("+----------------------");
+        }
+        System.out.println("+");
     }
 
     private static int getOptionMenu() {
