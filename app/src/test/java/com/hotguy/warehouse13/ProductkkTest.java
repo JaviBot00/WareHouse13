@@ -2,17 +2,17 @@ package com.hotguy.warehouse13;
 
 import com.hotguy.warehouse13.model.Product;
 
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-public class ProductTestkk {
+public class ProductkkTest {
 
-    public ProductTestkk() {
+    public ProductkkTest() {
     }
 
-    @BeforeEach
+    @Before
     public void setUp() {
     }
 
@@ -46,7 +46,7 @@ public class ProductTestkk {
 
     }
 
-    @AfterEach
+    @After
     public void tearDown() {
     }
 }
