@@ -100,6 +100,8 @@ public class Main {
         System.out.println("- 6. Show expired products                             -");
         System.out.println("- 7. Show products between two prices                  -");
         System.out.println("- 8. Show withdrawn products                           -");
+        System.out.println("- 9. Load data from file                               -");
+        System.out.println("- 10. Save data from file                              -");
         System.out.println("-                                                      -");
         System.out.println("-                                                      -");
         System.out.println("--------------------------------------------------------");
@@ -130,6 +132,12 @@ public class Main {
                 break;
             case 8:
                 listWithdrawnProducts();
+                break;
+                case 9:
+                loadDataFromFile();
+                break;
+            case 10:
+                saveDataToFile();
                 break;
             default:
                 break;
@@ -197,6 +205,16 @@ public class Main {
     public static void listWithdrawnProducts() {
         System.out.println("List of Withdrawn products:\n");
         printData(Controller.getSingleton().listWithdrawnProducts());
+    }
+
+    public static void loadDataFromFile() {
+        Controller.getSingleton().loadDataFromFile();
+        System.out.println("Data loaded successfully.");
+    }
+
+    public static void saveDataToFile() {
+        Controller.getSingleton().saveDataToFile();
+        System.out.println("Data saved successfully.");
     }
 
     private static void printData(String dataset) {

@@ -31,19 +31,19 @@ public class Controller {
         return instance;
     }
 
-    public void loadData() {
+    public void loadDataFromFile() {
         productList = DataAccess.loadDataFromFile("./", "products.csv");
     }
 
-    public void loadData(Context context) {
+    public void loadDataFromFile(Context context) {
         productList = DataAccess.loadDataFromFile(context, "products.csv");
     }
 
-    public void saveData() {
+    public void saveDataToFile() {
         DataAccess.saveDataToFile("./", "products.csv", productList);
     }
 
-    public void saveData(Context context) {
+    public void saveDataToFile(Context context) {
         DataAccess.saveDataToFile(context, "products.csv", productList);
     }
 
