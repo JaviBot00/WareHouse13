@@ -1,15 +1,18 @@
 package com.hotguy.warehouse13.controller;
 
+import android.content.Context;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.hotguy.warehouse13.model.Product;
 import com.hotguy.warehouse13.model.PerishableProduct;
+import com.hotguy.warehouse13.model.Product;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Controller {
     private static List<Product> productList;
@@ -17,7 +20,7 @@ public class Controller {
     private static Controller instance;
 
     private Controller() {
-        productList = DataAccess.loadData();
+//        productList = DataAccess.loadData();
         retiredProductList = new ArrayList<>();
     }
 
@@ -28,17 +31,25 @@ public class Controller {
         return instance;
     }
 
-//    public void saveData() {
-//        DataAccess.saveData(productList);
-//    }
+    public void loadData() {
+        productList = DataAccess.loadDataFromFile("./", "products.csv");
+    }
+
+    public void loadData(Context context) {
+        productList = DataAccess.loadDataFromFile(context, "products.csv");
+    }
+
+    public void saveData() {
+        DataAccess.saveDataToFile("./", "products.csv", productList);
+    }
+
+    public void saveData(Context context) {
+        DataAccess.saveDataToFile(context, "products.csv", productList);
+    }
 
     public boolean addProduct(boolean perishable, String jsonProduct) {
-        Product p;
-        if (perishable) {
-            p = parsePerishableProduct(jsonProduct);
-        } else {
-            p = parseProduct(jsonProduct);
-        }
+        Product p = perishable ? parsePerishableProduct(jsonProduct) : parseProduct(jsonProduct);
+
         if (p == null)
             return false;
 
@@ -90,7 +101,7 @@ public class Controller {
 
     public String listProductsNoStock() {
         Collections.sort(productList);
-        return new Gson().toJson(productList.stream().filter(p -> p.getStock() == 0));
+        return new Gson().toJson(productList.stream().filter(p -> p.getStock() == 0).collect(Collectors.toList()));
     }
 
     public String listExpiredProducts() {
@@ -98,12 +109,13 @@ public class Controller {
         LocalDate hoy = LocalDate.now();
         return new Gson().toJson(productList.stream()
             .filter(p -> p instanceof PerishableProduct)
-            .filter(p -> ((PerishableProduct) p).getExpiryDate().isBefore(hoy)));
+            .filter(p -> LocalDate.parse(((PerishableProduct) p).getExpirationDate(), PerishableProduct.FORMAT).isBefore(hoy))
+            .collect(Collectors.toList()));
     }
 
     public String listProductsBetweenPrices(double min, double max) {
         Collections.sort(productList);
-        return new Gson().toJson(productList.stream().filter(p -> p.getPrice() >= min && p.getPrice() <= max));
+        return new Gson().toJson(productList.stream().filter(p -> p.getPrice() >= min && p.getPrice() <= max).collect(Collectors.toList()));
     }
 
     public String listWithdrawnProducts() {
@@ -129,7 +141,7 @@ public class Controller {
         );
     }
 
-    private PerishableProduct parsePerishableProduct(String jsonProduct) {
+    private Product parsePerishableProduct(String jsonProduct) {
         if (jsonProduct == null || jsonProduct.isEmpty()) return null;
 
         JsonObject jsonObject = JsonParser.parseString(jsonProduct).getAsJsonObject();
@@ -137,14 +149,14 @@ public class Controller {
 
         // Clean y explícit
         if (!jsonObject.has("productCode") || !jsonObject.has("description") ||
-            !jsonObject.has("price") || !jsonObject.has("stock") || !jsonObject.has("expiryDate")) return null;
+            !jsonObject.has("price") || !jsonObject.has("stock") || !jsonObject.has("expirationDate")) return null;
 
         return new PerishableProduct(
             jsonObject.get("productCode").getAsString(),
             jsonObject.get("description").getAsString(),
             jsonObject.get("price").getAsDouble(),
             jsonObject.get("stock").getAsInt(),
-            jsonObject.get("expiryDate").getAsString()
+            jsonObject.get("expirationDate").getAsString()
         );
     }
 }
