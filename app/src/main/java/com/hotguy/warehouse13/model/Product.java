@@ -54,16 +54,7 @@ public class Product implements Comparable<Product> {
             return; // we never have negative stock
         this.stock += newStock; // if newStock is negative, units are removed from the warehouse
     }
-
-    // Method to display product information. CSV Plus
-    @Override
-    public String toString() {
-        return productCode + ";"
-            + description + ";"
-            + price + ";"
-            + stock + ";";
-    }
-
+    
     @Override
     public int compareTo(Product p) {
         return this.description.compareToIgnoreCase(p.description);

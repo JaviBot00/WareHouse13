@@ -21,8 +21,4 @@ public class PerishableProduct extends Product {
         this.expirationDate = expirationDate;
     }
 
-    @Override
-    public String toString() {
-        return super.toString() + expirationDate + ";";
-    }
 }
