@@ -31,6 +31,12 @@ public class Controller {
         return instance;
     }
 
+    static void resetForTesting() {
+        instance = null;
+        productList = new ArrayList<>();
+        retiredProductList = new ArrayList<>();
+    }
+
     public void loadDataFromMemory() {
         productList = DataAccess.loadData();
     }
@@ -112,14 +118,16 @@ public class Controller {
         Collections.sort(productList);
         LocalDate hoy = LocalDate.now();
         return new Gson().toJson(productList.stream()
-            .filter(p -> p instanceof PerishableProduct)
-            .filter(p -> LocalDate.parse(((PerishableProduct) p).getExpirationDate(), PerishableProduct.FORMAT).isBefore(hoy))
-            .collect(Collectors.toList()));
+                .filter(p -> p instanceof PerishableProduct)
+                .filter(p -> LocalDate.parse(((PerishableProduct) p).getExpirationDate(), PerishableProduct.FORMAT)
+                        .isBefore(hoy))
+                .collect(Collectors.toList()));
     }
 
     public String listProductsBetweenPrices(double min, double max) {
         Collections.sort(productList);
-        return new Gson().toJson(productList.stream().filter(p -> p.getPrice() >= min && p.getPrice() <= max).collect(Collectors.toList()));
+        return new Gson().toJson(productList.stream().filter(p -> p.getPrice() >= min && p.getPrice() <= max)
+                .collect(Collectors.toList()));
     }
 
     public String listWithdrawnProducts() {
@@ -128,39 +136,43 @@ public class Controller {
     }
 
     private Product parseProduct(String jsonProduct) {
-        if (jsonProduct == null || jsonProduct.isEmpty()) return null;
+        if (jsonProduct == null || jsonProduct.isEmpty())
+            return null;
 
         JsonObject jsonObject = JsonParser.parseString(jsonProduct).getAsJsonObject();
-        if (jsonObject.isEmpty()) return null;
+        if (jsonObject.isEmpty())
+            return null;
 
         // Clean y explícit
         if (!jsonObject.has("productCode") || !jsonObject.has("description") ||
-            !jsonObject.has("price") || !jsonObject.has("stock")) return null;
+                !jsonObject.has("price") || !jsonObject.has("stock"))
+            return null;
 
         return new Product(
-            jsonObject.get("productCode").getAsString(),
-            jsonObject.get("description").getAsString(),
-            jsonObject.get("price").getAsDouble(),
-            jsonObject.get("stock").getAsInt()
-        );
+                jsonObject.get("productCode").getAsString(),
+                jsonObject.get("description").getAsString(),
+                jsonObject.get("price").getAsDouble(),
+                jsonObject.get("stock").getAsInt());
     }
 
     private Product parsePerishableProduct(String jsonProduct) {
-        if (jsonProduct == null || jsonProduct.isEmpty()) return null;
+        if (jsonProduct == null || jsonProduct.isEmpty())
+            return null;
 
         JsonObject jsonObject = JsonParser.parseString(jsonProduct).getAsJsonObject();
-        if (jsonObject.isEmpty()) return null;
+        if (jsonObject.isEmpty())
+            return null;
 
         // Clean y explícit
         if (!jsonObject.has("productCode") || !jsonObject.has("description") ||
-            !jsonObject.has("price") || !jsonObject.has("stock") || !jsonObject.has("expirationDate")) return null;
+                !jsonObject.has("price") || !jsonObject.has("stock") || !jsonObject.has("expirationDate"))
+            return null;
 
         return new PerishableProduct(
-            jsonObject.get("productCode").getAsString(),
-            jsonObject.get("description").getAsString(),
-            jsonObject.get("price").getAsDouble(),
-            jsonObject.get("stock").getAsInt(),
-            jsonObject.get("expirationDate").getAsString()
-        );
+                jsonObject.get("productCode").getAsString(),
+                jsonObject.get("description").getAsString(),
+                jsonObject.get("price").getAsDouble(),
+                jsonObject.get("stock").getAsInt(),
+                jsonObject.get("expirationDate").getAsString());
     }
 }
