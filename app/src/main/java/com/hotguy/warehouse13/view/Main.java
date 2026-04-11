@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
-
 /**
  * Descripción del examen:
  * <p>
@@ -100,9 +99,8 @@ public class Main {
         System.out.println("- 6. Show expired products                             -");
         System.out.println("- 7. Show products between two prices                  -");
         System.out.println("- 8. Show withdrawn products                           -");
-        System.out.println("- 9. Load data from memory                             -");
-        System.out.println("- 10. Load data from file                               -");
-        System.out.println("- 11. Save data from file                              -");
+        System.out.println("- 9. Load data from file                               -");
+        System.out.println("- 10. Save data from file                              -");
         System.out.println("-                                                      -");
         System.out.println("-                                                      -");
         System.out.println("--------------------------------------------------------");
@@ -135,12 +133,9 @@ public class Main {
                 listWithdrawnProducts();
                 break;
             case 9:
-                loadDataFromMemory();
-                break;
-            case 10:
                 loadDataFromFile();
                 break;
-            case 11:
+            case 10:
                 saveDataToFile();
                 break;
             default:
@@ -211,30 +206,28 @@ public class Main {
         printData(Controller.getSingleton().listWithdrawnProducts());
     }
 
-    public static void loadDataFromMemory() {
-        Controller.getSingleton().loadDataFromMemory();
-        System.out.println("Data loaded successfully.");
-    }
 
     public static void loadDataFromFile() {
         String path = requestData("Enter the path to the file: ");
         String file = requestData("Enter the name of the file: ");
-        Controller.getSingleton().loadDataFromFile(path, file);
-        System.out.println("Data loaded successfully.");
+        if (Controller.getSingleton().loadDataFromFile(path, file))
+            System.out.println("Data loaded successfully.");
     }
 
     public static void saveDataToFile() {
         String path = requestData("Enter the path to the file: ");
         String file = requestData("Enter the name of the file: ");
-        Controller.getSingleton().saveDataToFile(path, file, Controller.getSingleton().getList());
-        System.out.println("Data saved successfully.");
+        if (Controller.getSingleton().saveDataToFile(path, file))
+            System.out.println("Data saved successfully.");
     }
 
     private static void printData(String dataset) {
-        if (dataset == null || dataset.isEmpty()) return;
+        if (dataset == null || dataset.isEmpty())
+            return;
 
         JsonArray jsonArray = JsonParser.parseString(dataset).getAsJsonArray();
-        if (jsonArray.isEmpty()) return;
+        if (jsonArray.isEmpty())
+            return;
 
         // Header with the keys of all elements
         Set<String> keys = new LinkedHashSet<>();
