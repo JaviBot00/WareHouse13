@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    plurals.xml  →  res/values-es/plurals.xml
+-->
+<resources>
+    <plurals name="results_count">
+        <item quantity="one">%d producto</item>
+        <item quantity="many">%d productos</item>
+    </plurals>
+</resources>

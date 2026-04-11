@@ -1,12 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- App -->
     <string name="app_name">WareHouse13</string>
+    <string name="about_description">Inventory management system · MVC Architecture</string>
+
+    <!-- BottomNav -->
+    <string name="nav_add">Add</string>
+    <string name="nav_list">Stock</string>
+    <string name="nav_filters">Filters</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Common fields -->
+    <string name="code">Code</string>
     <string name="description">Description</string>
     <string name="price">Price</string>
     <string name="stock">Stock</string>
     <string name="add">Add</string>
     <string name="list">List</string>
     <string name="settings">Settings</string>
-    <string name="code">Code</string>
-    <string name="toast_item_added">Item added successfully</string>
+    <string name="expiration_date">Expiration</string>
+
+    <!-- Add Form -->
+    <string name="form_title_add">New product</string>
+    <string name="form_subtitle_add">Fill in the product details</string>
+    <string name="perishable_product">Perishable product</string>
+    <string name="perishable_hint">Has an expiration date</string>
+    <string name="code_helper">Between 8 and 16 alphanumeric characters</string>
+    <string name="expiration_helper">Format: YYYYMMDD (e.g. 20261231)</string>
+    <string name="btn_add_product">Add product</string>
+
+    <!-- Types of products (chip) -->
+    <string name="type_standard">Standard</string>
+    <string name="type_perishable">Perishable</string>
+
+    <!-- List -->
+    <string name="empty_warehouse">No products in warehouse</string>
+    <string name="fab_edit_stock">Edit stock</string>
+    <string name="btn_stock">Stock</string>
+    <string name="btn_withdraw">Withdraw</string>
+
+    <!-- Filters -->
+    <string name="filters_title">Filters</string>
+    <string name="filters_subtitle">Browse your inventory</string>
+    <string name="filter_all">All</string>
+    <string name="filter_no_stock">No stock</string>
+    <string name="filter_expired">Expired</string>
+    <string name="filter_prices">Price range</string>
+    <string name="filter_withdrawn">Withdrawn</string>
+    <string name="min_price">Min. price</string>
+    <string name="max_price">Max. price</string>
+    <string name="btn_apply">Apply</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_subtitle">Data persistence and connection</string>
+    <string name="section_file">Local file</string>
+    <string name="section_db">Remote database</string>
+    <string name="section_about">About</string>
+    <string name="save_to_file">Save to file</string>
+    <string name="save_to_file_hint">Exports all products to products.json</string>
+    <string name="load_from_file">Load from file</string>
+    <string name="load_from_file_hint">Imports products from products.json</string>
+    <string name="btn_save">Save</string>
+    <string name="btn_load">Load</string>
+    <string name="db_host">MySQL Host (IP)</string>
+    <string name="db_host_hint">e.g. 192.168.1.100</string>
+    <string name="db_port">Port</string>
+    <string name="btn_connect_db">Connect to database</string>
+    <string name="db_coming_soon">Coming soon — WiFi local connection to MySQL</string>
+
+    <!-- Dialogs -->
+    <string name="dialog_edit_stock_title">Edit stock</string>
+    <string name="dialog_edit_stock_msg">Product: %s\nEnter the stock change (negative to remove units)</string>
+    <string name="dialog_withdraw_title">Withdraw product</string>
+    <string name="dialog_withdraw_msg">Are you sure you want to withdraw product %s?</string>
+    <string name="stock_change_hint">Stock change</string>
+    <string name="stock_change_helper">Use negative values to remove units</string>
+    <string name="btn_cancel">Cancel</string>
+
+    <!-- Toasts and Snack bars -->
+    <string name="toast_item_added">Product added successfully</string>
     <string name="toast_fill_fields">Please fill all fields</string>
+    <string name="toast_stock_updated">Stock updated successfully</string>
+    <string name="toast_withdrawn">Product withdrawn successfully</string>
+    <string name="toast_file_saved">Data saved to file</string>
+    <string name="toast_file_loaded">Data loaded from file</string>
+
+    <!-- Errors -->
+    <string name="error_required">Required field</string>
+    <string name="error_number_format">Invalid number format</string>
+    <string name="error_duplicate_code">A product with this code already exists</string>
+    <string name="error_stock_negative">Operation would result in negative stock</string>
+    <string name="error_not_found">Product not found</string>
+    <string name="error_price_range">Minimum price must be less than maximum</string>
+    <string name="error_file_save">Error saving file</string>
+    <string name="error_file_load">Error loading file</string>
 </resources>
