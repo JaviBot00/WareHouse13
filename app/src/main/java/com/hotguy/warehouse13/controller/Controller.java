@@ -31,30 +31,28 @@ public class Controller {
         return instance;
     }
 
-    static void resetForTesting() {
+    public static void resetForTesting() {
         instance = null;
         productList = new ArrayList<>();
         retiredProductList = new ArrayList<>();
     }
 
-    public void loadDataFromMemory() {
-        productList = DataAccess.loadData();
-    }
-
-    public void loadDataFromFile(String path, String file) {
+    public boolean loadDataFromFile(String path, String file) {
         productList = DataAccess.loadDataFromFile(path, file);
+        return productList.isEmpty();
     }
 
-    public void loadDataFromFile(Context context, String file) {
-        productList = DataAccess.loadDataFromFile(context, file);
+    public boolean saveDataToFile(String path, String file) {
+        return DataAccess.saveDataToFile(path, file, productList);
     }
 
-    public void saveDataToFile(String path, String file, List<Product> list) {
-        DataAccess.saveDataToFile(path, file, list);
+    public boolean loadProductList(Context context) {
+        productList = DataAccess.loadDataFromFile(context, "products.json");
+        return productList.isEmpty();
     }
 
-    public void saveDataToFile(Context context, String file, List<Product> list) {
-        DataAccess.saveDataToFile(context, file, list);
+    public boolean saveProductList(Context context) {
+        return DataAccess.saveDataToFile(context, "products.json", productList);
     }
 
     public boolean addProduct(boolean perishable, String jsonProduct) {
@@ -90,8 +88,12 @@ public class Controller {
         return false;
     }
 
-    public List<Product> getList() {
+    public List<Product> getProductList() {
         return productList;
+    }
+
+    public List<Product> getRetiredProductList() {
+        return retiredProductList;
     }
 
     public String listProducts() {
