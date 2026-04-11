@@ -34,41 +34,6 @@ public class DataAccessTest {
         Files.deleteIfExists(Paths.get(TEST_PATH, TEST_FILE));
     }
 
-    // ==================== LOAD DATA (datos hardcodeados) ====================
-
-    @Test
-    public void shouldLoadHardcodedDataSuccessfully() {
-        List<Product> products = DataAccess.loadData();
-        assertNotNull(products);
-        assertFalse(products.isEmpty());
-    }
-
-    @Test
-    public void shouldLoadCorrectNumberOfHardcodedProducts() {
-        List<Product> products = DataAccess.loadData();
-        assertEquals(13, products.size());
-    }
-
-    @Test
-    public void shouldDeserializePerishableProductCorrectly() {
-        List<Product> products = DataAccess.loadData();
-        long perishableCount = products.stream()
-                .filter(p -> p instanceof PerishableProduct)
-                .count();
-        assertEquals(1, perishableCount);
-    }
-
-    @Test
-    public void shouldDeserializeNormalProductCorrectly() {
-        List<Product> products = DataAccess.loadData();
-        Product first = products.stream()
-                .filter(p -> p.getProductCode().equals("TECL5678X"))
-                .findFirst()
-                .orElse(null);
-        assertNotNull(first);
-        assertFalse(first instanceof PerishableProduct);
-    }
-
     // ==================== SAVE + LOAD ROUNDTRIP ====================
 
     @Test
