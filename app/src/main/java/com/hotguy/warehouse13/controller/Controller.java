@@ -31,21 +31,6 @@ public class Controller {
         return instance;
     }
 
-    public static void resetForTesting() {
-        instance = null;
-        productList = new ArrayList<>();
-        retiredProductList = new ArrayList<>();
-    }
-
-    public boolean loadDataFromFile(String path, String file) {
-        productList = DataAccess.loadDataFromFile(path, file);
-        return productList.isEmpty();
-    }
-
-    public boolean saveDataToFile(String path, String file) {
-        return DataAccess.saveDataToFile(path, file, productList);
-    }
-
     public boolean loadProductList(Context context) {
         productList = DataAccess.loadDataFromFile(context, "products.json");
         return productList.isEmpty();
@@ -88,17 +73,9 @@ public class Controller {
         return false;
     }
 
-    public List<Product> getProductList() {
-        return productList;
-    }
-
-    public List<Product> getRetiredProductList() {
-        return retiredProductList;
-    }
-
-    public String listProducts() {
+    public List<Product> listProducts() {
         Collections.sort(productList);
-        return new Gson().toJson(productList);
+        return productList;
     }
 
     public boolean withdrawProduct(String productCode) {
@@ -111,30 +88,50 @@ public class Controller {
         return false;
     }
 
-    public String listProductsNoStock() {
+    public List<Product> listProductsNoStock() {
         Collections.sort(productList);
-        return new Gson().toJson(productList.stream().filter(p -> p.getStock() == 0).collect(Collectors.toList()));
+        return productList.stream().filter(p -> p.getStock() == 0).collect(Collectors.toList());
     }
 
-    public String listExpiredProducts() {
+    public List<Product> listExpiredProducts() {
         Collections.sort(productList);
         LocalDate hoy = LocalDate.now();
-        return new Gson().toJson(productList.stream()
+        return productList.stream()
                 .filter(p -> p instanceof PerishableProduct)
                 .filter(p -> LocalDate.parse(((PerishableProduct) p).getExpirationDate(), PerishableProduct.FORMAT)
                         .isBefore(hoy))
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
     }
 
-    public String listProductsBetweenPrices(double min, double max) {
+    public List<Product> listProductsBetweenPrices(double min, double max) {
         Collections.sort(productList);
-        return new Gson().toJson(productList.stream().filter(p -> p.getPrice() >= min && p.getPrice() <= max)
-                .collect(Collectors.toList()));
+        return productList.stream().filter(p -> p.getPrice() >= min && p.getPrice() <= max)
+                .collect(Collectors.toList());
     }
 
-    public String listWithdrawnProducts() {
+    public List<Product> listWithdrawnProducts() {
         Collections.sort(retiredProductList);
-        return new Gson().toJson(retiredProductList);
+        return retiredProductList;
+    }
+
+    /**
+     * Carga la lista de productos desde un String JSON ya leído.
+     * Usado cuando el fichero fue leído por FilePickerManager (SAF).
+     * <p>
+     * ¿Por qué existe este método además de loadProductList(Context)?
+     * · loadProductList(Context) lee desde el almacenamiento interno
+     *   privado de la app (getFilesDir) — fichero interno.
+     * · loadProductListFromJson(String) recibe el contenido ya leído
+     *   desde cualquier Uri SAF — fichero elegido por el usuario.
+     * · DataAccess sigue siendo el único que parsea JSON: la Vista
+     *   nunca toca el Modelo directamente.
+     *
+     * @param json Contenido JSON leído desde el Uri SAF
+     * @return true si se cargaron productos, false si la lista quedó vacía
+     */
+    public boolean loadProductListFromJson(String json) {
+        productList = DataAccess.parseProductListFromJson(json);
+        return !productList.isEmpty();
     }
 
     private Product parseProduct(String jsonProduct) {

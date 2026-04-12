@@ -61,18 +61,28 @@ public class ListFragment extends Fragment {
      */
     private void setupRecyclerView() {
         adapter = new ProductsRVAdapter(
-                Controller.getSingleton().getProductList(),
+                Controller.getSingleton().listProducts(),
                 this::showEditStockDialog,
                 this::showWithdrawDialog);
         binding.rvProducts.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.rvProducts.setAdapter(adapter);
     }
 
-    // ── Refresca la lista cuando volvemos a este fragment ──
-    @Override
-    public void onResume() {
-        super.onResume();
-        refreshList();
+    // ── Helpers ──
+
+    /** Notifica al adapter que el dataset cambió y actualiza el estado vacío. */
+    private void refreshList() {
+        if (adapter != null)
+            adapter.notifyDataSetChanged();
+        updateEmptyState();
+    }
+
+    /** Muestra u oculta el estado vacío según si hay productos. */
+    private void updateEmptyState() {
+        boolean isEmpty = Controller.getSingleton().listProducts() == null
+            || Controller.getSingleton().listProducts().isEmpty();
+        binding.layoutEmpty.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+        binding.rvProducts.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
     }
 
     // ── Diálogo: Editar stock ──
@@ -147,21 +157,17 @@ public class ListFragment extends Fragment {
                 .show();
     }
 
-    // ── Helpers ──
-
-    /** Notifica al adapter que el dataset cambió y actualiza el estado vacío. */
-    private void refreshList() {
-        if (adapter != null)
-            adapter.notifyDataSetChanged();
-        updateEmptyState();
+    // ── Refresca la lista cuando volvemos a este fragment ──
+    @Override
+    public void onResume() {
+        super.onResume();
+        refreshList();
     }
 
-    /** Muestra u oculta el estado vacío según si hay productos. */
-    private void updateEmptyState() {
-        boolean isEmpty = Controller.getSingleton().getProductList() == null
-                || Controller.getSingleton().getProductList().isEmpty();
-        binding.layoutEmpty.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
-        binding.rvProducts.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) refreshList();
     }
 
     @Override

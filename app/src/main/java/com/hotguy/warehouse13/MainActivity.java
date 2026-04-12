@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         // ── Carga inicial de datos desde fichero (si existe) ──
         // Si el fichero no existe, el catch interno de DataAccess
         // devuelve lista vacía sin crashear.
-        Controller.getSingleton().loadProductList(this);
+//        Controller.getSingleton().loadProductList(this);
 
         // ── Fragment inicial ──
         if (savedInstanceState == null) {

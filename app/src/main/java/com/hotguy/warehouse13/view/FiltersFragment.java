@@ -11,14 +11,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonParser;
 import com.hotguy.warehouse13.R;
 import com.hotguy.warehouse13.controller.Controller;
 import com.hotguy.warehouse13.controller.ProductsRVAdapter;
 import com.hotguy.warehouse13.databinding.FragmentFiltersBinding;
+import com.hotguy.warehouse13.model.Product;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * FiltersFragment — Vista de filtros sobre el inventario.
@@ -47,8 +47,8 @@ public class FiltersFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         binding = FragmentFiltersBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -84,16 +84,16 @@ public class FiltersFragment extends Fragment {
                 return;
             int id = checkedIds.get(0);
 
-            if (id == R.id.chipAll) {
+            if (id == binding.chipAll.getId()) {
                 applyAllFilter();
-            } else if (id == R.id.chipNoStock) {
+            } else if (id == binding.chipNoStock.getId()) {
                 applyNoStockFilter();
-            } else if (id == R.id.chipExpired) {
+            } else if (id == binding.chipExpired.getId()) {
                 applyExpiredFilter();
-            } else if (id == R.id.chipPrices) {
+            } else if (id == binding.chipPrices.getId()) {
                 binding.cardPriceRange.setVisibility(View.VISIBLE);
                 // No aplicamos hasta que el usuario pulse "Aplicar"
-            } else if (id == R.id.chipWithdrawn) {
+            } else if (id == binding.chipWithdrawn.getId()) {
                 applyWithdrawnFilter();
             }
         });
@@ -105,23 +105,19 @@ public class FiltersFragment extends Fragment {
     // ── Métodos de filtrado ──
 
     private void applyAllFilter() {
-        String json = Controller.getSingleton().listProducts();
-        showResults(json);
+        showResults(Controller.getSingleton().listProducts());
     }
 
     private void applyNoStockFilter() {
-        String json = Controller.getSingleton().listProductsNoStock();
-        showResults(json);
+        showResults(Controller.getSingleton().listProductsNoStock());
     }
 
     private void applyExpiredFilter() {
-        String json = Controller.getSingleton().listExpiredProducts();
-        showResults(json);
+        showResults(Controller.getSingleton().listExpiredProducts());
     }
 
     private void applyWithdrawnFilter() {
-        String json = Controller.getSingleton().listWithdrawnProducts();
-        showResults(json);
+        showResults(Controller.getSingleton().listWithdrawnProducts());
     }
 
     private void applyPriceRangeFilter() {
@@ -130,7 +126,7 @@ public class FiltersFragment extends Fragment {
 
         if (minStr.isEmpty() || maxStr.isEmpty()) {
             Toast.makeText(requireContext(),
-                    getString(R.string.toast_fill_fields), Toast.LENGTH_SHORT).show();
+                getString(R.string.toast_fill_fields), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -140,29 +136,30 @@ public class FiltersFragment extends Fragment {
 
             if (min > max) {
                 Toast.makeText(requireContext(),
-                        getString(R.string.error_price_range), Toast.LENGTH_SHORT).show();
+                    getString(R.string.error_price_range), Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            String json = Controller.getSingleton().listProductsBetweenPrices(min, max);
-            showResults(json);
+            showResults(Controller.getSingleton().listProductsBetweenPrices(min, max));
 
         } catch (NumberFormatException e) {
             Toast.makeText(requireContext(),
-                    getString(R.string.error_number_format), Toast.LENGTH_SHORT).show();
+                getString(R.string.error_number_format), Toast.LENGTH_SHORT).show();
         }
     }
 
-    /** Vuelve a aplicar el chip activo (para onResume). */
+    /**
+     * Vuelve a aplicar el chip activo (para onResume).
+     */
     private void applyCurrentChip() {
         int checkedId = binding.chipGroup.getCheckedChipId();
-        if (checkedId == R.id.chipAll)
+        if (checkedId == binding.chipAll.getId())
             applyAllFilter();
-        else if (checkedId == R.id.chipNoStock)
+        else if (checkedId == binding.chipNoStock.getId())
             applyNoStockFilter();
-        else if (checkedId == R.id.chipExpired)
+        else if (checkedId == binding.chipExpired.getId())
             applyExpiredFilter();
-        else if (checkedId == R.id.chipWithdrawn)
+        else if (checkedId == binding.chipWithdrawn.getId())
             applyWithdrawnFilter();
         // Precio no se reaplica automáticamente (requiere input del usuario)
     }
@@ -174,32 +171,27 @@ public class FiltersFragment extends Fragment {
      * La Vista no construye objetos del Modelo: el Adapter sabe
      * interpretar el JSON internamente.
      */
-    private void showResults(String json) {
-        if (json == null || json.isEmpty()) {
+    private void showResults(List<Product> list) {
+        if (list == null || list.isEmpty()) {
             updateCount(0);
             adapter.updateData(new ArrayList<>());
             return;
         }
-        try {
-            JsonArray arr = JsonParser.parseString(json).getAsJsonArray();
-            updateCount(arr.size());
-        } catch (Exception e) {
-            updateCount(0);
-        }
         // El adapter se recarga con el JSON → la lista es del Controlador
-        adapter.updateData(Controller.getSingleton().getProductList());
+        updateCount(list.size());
+        adapter.updateData(list);
         adapter.notifyDataSetChanged();
     }
 
     private void updateCount(int count) {
         binding.txtResultCount.setText(
-                getResources().getQuantityString(R.plurals.results_count, count, count));
+            getResources().getQuantityString(R.plurals.results_count, count, count));
     }
 
     private String getText(android.widget.EditText edit) {
         return edit != null && edit.getText() != null
-                ? edit.getText().toString().trim()
-                : "";
+            ? edit.getText().toString().trim()
+            : "";
     }
 
     @Override

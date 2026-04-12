@@ -10,36 +10,61 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
 import com.hotguy.warehouse13.R;
 import com.hotguy.warehouse13.controller.Controller;
+import com.hotguy.warehouse13.controller.FilePickerManager;
 import com.hotguy.warehouse13.databinding.FragmentSettingsBinding;
 
 /**
  * SettingsFragment — Vista de configuración y persistencia de datos.
  * <p>
  * Responsabilidad MVC:
- * · Delega guardar/cargar al Controlador, que a su vez usa DataAccess.
- * · Muestra feedback de éxito o error con Snackbar.
- * · La sección de BD es placeholder visual (botón deshabilitado).
+ * · Gestiona la UI de guardar/cargar (botones, feedback).
+ * · Delega la apertura del selector a FilePickerManager.
+ * · Cuando recibe el Uri (callback), llama al Controller para
+ * leer o escribir los datos. Nunca toca DataAccess directamente.
  * <p>
- * NOTA sobre permisos:
- * La app usa context.getFilesDir() (almacenamiento interno privado),
- * que NO necesita permisos en tiempo de ejecución en ninguna versión
- * de Android. Los permisos READ/WRITE_EXTERNAL_STORAGE en el Manifest
- * están preparados solo para si en el futuro se quiere acceder al
- * almacenamiento externo (Downloads, SD card, etc.).
+ * Flujo guardar:
+ * btnSave → FilePickerManager.openSavePicker()
+ * → [usuario elige ubicación en el selector del sistema]
+ * → callback onSaveLocationPicked(uri)
+ * → FilePickerManager.writeToUri(uri, json)   ← escribe el fichero
+ * → showSnackbar()
+ * <p>
+ * Flujo cargar:
+ * btnLoad → FilePickerManager.openLoadPicker()
+ * → [usuario elige fichero en el selector del sistema]
+ * → callback onLoadFilePicked(uri)
+ * → FilePickerManager.readFromUri(uri)         ← lee el fichero
+ * → Controller.loadProductListFromJson(json)   ← parsea y carga
+ * → showSnackbar()
+ * <p>
+ * ¿Por qué FilePickerManager se crea en onCreate() y no en onCreateView()?
+ * · Los ActivityResultLaunchers deben registrarse ANTES de onStart().
+ * · onCreate() es el momento correcto y seguro.
  */
 public class SettingsFragment extends Fragment {
 
     private FragmentSettingsBinding binding;
+    private FilePickerManager filePickerManager;
 
     public SettingsFragment() {
     }
 
+    // ── Ciclo de vida ────────────────────────────────────────────────────────
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // IMPORTANTE: los launchers se registran aquí, antes de onCreateView
+        filePickerManager = new FilePickerManager(this);
+    }
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         binding = FragmentSettingsBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -49,42 +74,54 @@ public class SettingsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // ── Guardar en fichero ──
-        binding.btnSaveFile.setOnClickListener(v -> saveToFile());
+        binding.btnSaveFile.setOnClickListener(v -> openSavePicker());
 
         // ── Cargar desde fichero ──
-        binding.btnLoadFile.setOnClickListener(v -> loadFromFile());
+        binding.btnLoadFile.setOnClickListener(v -> openLoadPicker());
 
         // ── BD remota: solo placeholder, botón deshabilitado ──
         // Se habilitará cuando se implemente la conexión MySQL
         binding.btnConnectDb.setEnabled(false);
     }
 
-    // ── Guardar ──
+    // ── Cargar ───────────────────────────────────────────────────────────────
 
-    private void saveToFile() {
-        showProgress(true);
-        try {
-            Controller.getSingleton().saveProductList(requireContext());
-            showProgress(false);
-            showSnackbar(getString(R.string.toast_file_saved), false);
-        } catch (Exception e) {
-            showProgress(false);
-            showSnackbar(getString(R.string.error_file_save), true);
-        }
+    /**
+     * Abre el selector SAF para elegir qué fichero cargar.
+     * Solo muestra ficheros JSON y de texto plano.
+     */
+    private void openLoadPicker() {
+        filePickerManager.openLoadPicker(uri -> {
+            // Este callback llega cuando el usuario elige el fichero
+            String json = filePickerManager.readFromUri(requireContext(), uri);
+            if (json == null || json.isEmpty()) {
+                showSnackbar(getString(R.string.error_file_load), true);
+                return;
+            }
+            boolean ok = Controller.getSingleton().loadProductListFromJson(json);
+            showSnackbar(
+                ok ? getString(R.string.toast_file_loaded)
+                    : getString(R.string.error_file_load),
+                !ok);
+        });
     }
 
-    // ── Cargar ──
+    // ── Guardar ─────────────────────────────────────────────────────────────
 
-    private void loadFromFile() {
-        showProgress(true);
-        try {
-            Controller.getSingleton().loadProductList(requireContext());
-            showProgress(false);
-            showSnackbar(getString(R.string.toast_file_loaded), false);
-        } catch (Exception e) {
-            showProgress(false);
-            showSnackbar(getString(R.string.error_file_load), true);
-        }
+    /**
+     * Abre el selector SAF para elegir dónde guardar.
+     * El nombre sugerido es "products.json" pero el usuario puede cambiarlo.
+     */
+    private void openSavePicker() {
+        filePickerManager.openSavePicker("products.json", uri -> {
+            // Este callback llega cuando el usuario confirma la ubicación
+            String json = new Gson().toJson(Controller.getSingleton().listProducts());
+            boolean ok = filePickerManager.writeToUri(requireContext(), uri, json);
+            showSnackbar(
+                ok ? getString(R.string.toast_file_saved)
+                    : getString(R.string.error_file_save),
+                !ok);
+        });
     }
 
     // ── Helpers ──
@@ -100,12 +137,10 @@ public class SettingsFragment extends Fragment {
      * @param isError si true, usa color de error
      */
     private void showSnackbar(String message, boolean isError) {
-        if (getView() == null)
-            return;
+        if (getView() == null) return;
         Snackbar snack = Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT);
         if (isError) {
-            snack.setBackgroundTint(
-                    requireContext().getColor(R.color.colorError));
+            snack.setBackgroundTint(requireContext().getColor(R.color.colorError));
         }
         snack.show();
     }

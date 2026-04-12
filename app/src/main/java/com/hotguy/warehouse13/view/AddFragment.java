@@ -139,16 +139,20 @@ public class AddFragment extends Fragment {
         String jsonProduct = new Gson().toJson(data);
 
         // ── Llamada al Controlador ──
-        boolean added = Controller.getSingleton().addProduct(isPerishable, jsonProduct);
-
-        if (added) {
-            Toast.makeText(requireContext(),
+        try {
+            boolean added = Controller.getSingleton().addProduct(isPerishable, jsonProduct);
+            if (added) {
+                Toast.makeText(requireContext(),
                     getString(R.string.toast_item_added), Toast.LENGTH_SHORT).show();
-            clearForm();
-        } else {
-            // El Controlador devuelve false si el código ya existe
-            binding.tilCode.setError(getString(R.string.error_duplicate_code));
+                clearForm();
+            } else {
+                // El Controlador devuelve false si el código ya existe
+                binding.tilCode.setError(getString(R.string.error_duplicate_code));
+            }
+        } catch (Exception e) {
+            binding.tilCode.setError(e.getMessage());
         }
+
     }
 
     // ── Helpers ──

@@ -20,11 +20,25 @@ public class DataAccess {
 
     private static final Gson GSON = new Gson();
 
-    public static List<Product> loadDataFromFile(String path, String file) {
-        List<String> lines = getData(path, file);
-        if (lines.isEmpty())
+    /**
+     * Parsea una lista de productos desde un String JSON.
+     * Expuesto como público para que Controller pueda llamarlo
+     * cuando el JSON viene de una fuente externa (SAF Uri).
+     * <p>
+     * Antes este método era privado (parseFromJsonArray) y solo
+     * se usaba internamente. Ahora se reutiliza desde Controller.
+     *
+     * @param json Contenido JSON completo como String
+     * @return Lista de productos (vacía si el JSON es inválido)
+     */
+    public static List<Product> parseProductListFromJson(String json) {
+        if (json == null || json.isEmpty()) return new ArrayList<>();
+        try {
+            return parseFromJsonArray(json);
+        } catch (Exception e) {
+            Log.e("DataAccess", "Error parsing JSON", e);
             return new ArrayList<>();
-        return parseFromJsonArray(String.join("", lines));
+        }
     }
 
     public static List<Product> loadDataFromFile(Context context, String file) {
@@ -50,10 +64,6 @@ public class DataAccess {
         return products;
     }
 
-    public static boolean saveDataToFile(String path, String file, List<Product> products) {
-        return saveData(path, file, GSON.toJson(parseToJsonArray(products)));
-    }
-
     public static boolean saveDataToFile(Context context, String file, List<Product> products) {
         return saveData(context, file, GSON.toJson(parseToJsonArray(products)));
     }
@@ -72,25 +82,6 @@ public class DataAccess {
             data.add(aux);
         }
         return data;
-    }
-
-    private static List<String> getData(String path, String file) {
-        try {
-            return Files.readAllLines(Paths.get(path, file));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
-    }
-
-    private static boolean saveData(String path, String file, String lines) {
-        try {
-            Files.write(Paths.get(path, file), lines.getBytes());
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
     }
 
     private static List<String> getData(Context context, String file) {
