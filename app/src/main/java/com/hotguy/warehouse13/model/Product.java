@@ -23,7 +23,7 @@ public class Product implements Comparable<Product> {
     public void setProductCode(String productCode) {
         if (productCode == null || productCode.length() < 8 || productCode.length() > 16) {
             throw new IllegalArgumentException(
-                    "Product code must be alphanumeric and between 8 and 16 characters.");
+                "Product code must be alphanumeric and between 8 and 16 characters.");
         }
         this.productCode = productCode;
     }

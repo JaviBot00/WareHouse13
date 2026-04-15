@@ -59,15 +59,16 @@
     <string name="section_about">About</string>
     <string name="save_to_file">Save to file</string>
     <string name="save_to_file_hint">Exports all products to products.json</string>
+    <string name="save_to_bd">Save to DB</string>
+    <string name="save_to_bd_hint">Exports all products to WareHouse13.db</string>
     <string name="load_from_file">Load from file</string>
     <string name="load_from_file_hint">Imports products from products.json</string>
+    <string name="load_from_bd">Load from BD</string>
+    <string name="load_from_bd_hint">Imports products from WareHouse13.db</string>
     <string name="btn_save">Save</string>
     <string name="btn_load">Load</string>
-    <string name="db_host">MySQL Host (IP)</string>
-    <string name="db_host_hint">e.g. 192.168.1.100</string>
-    <string name="db_port">Port</string>
     <string name="btn_connect_db">Connect to database</string>
-    <string name="db_coming_soon">Coming soon — WiFi local connection to MySQL</string>
+    <string name="db_info">WiFi connection to MySQL</string>
 
     <!-- Dialogs -->
     <string name="dialog_edit_stock_title">Edit stock</string>

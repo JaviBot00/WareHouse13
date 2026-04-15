@@ -8,7 +8,7 @@ public class PerishableProduct extends Product {
     private String expirationDate; // YYYYMMDD
 
     public PerishableProduct(String productCode, String description, double price, int stock,
-            String expirationDate) {
+                             String expirationDate) {
         super(productCode, description, price, stock);
         this.expirationDate = expirationDate;
     }

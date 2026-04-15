@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
     fragment_settings.xml
     ════════════════════════════════════════════════════════
     Pantalla de ajustes: persistencia de datos.
@@ -8,8 +7,7 @@
       2. Base de datos remota (placeholder para futuro)
     ════════════════════════════════════════════════════════
 -->
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -29,17 +27,17 @@
             android:layout_height="wrap_content"
             android:text="@string/settings_title"
             android:textAppearance="?attr/textAppearanceHeadlineSmall"
-            android:textStyle="bold"
-            android:textColor="?attr/colorOnBackground" />
+            android:textColor="?attr/colorOnBackground"
+            android:textStyle="bold" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="28dp"
+            android:alpha="0.6"
             android:text="@string/settings_subtitle"
             android:textAppearance="?attr/textAppearanceBodyMedium"
-            android:textColor="?attr/colorOnBackground"
-            android:alpha="0.6"
-            android:layout_marginBottom="28dp" />
+            android:textColor="?attr/colorOnBackground" />
 
         <!-- ════════════════════════════════════════════
              SECCIÓN 1 — Fichero local JSON
@@ -47,11 +45,11 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:letterSpacing="0.08"
             android:text="@string/section_file"
             android:textAppearance="?attr/textAppearanceLabelLarge"
-            android:textColor="?attr/colorPrimary"
-            android:letterSpacing="0.08"
-            android:layout_marginBottom="12dp" />
+            android:textColor="?attr/colorPrimary" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
@@ -70,9 +68,9 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp"
                     android:gravity="center_vertical"
-                    android:layout_marginBottom="16dp">
+                    android:orientation="horizontal">
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -90,10 +88,10 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:alpha="0.6"
                             android:text="@string/save_to_file_hint"
                             android:textAppearance="?attr/textAppearanceBodySmall"
-                            android:textColor="?attr/colorOnSurface"
-                            android:alpha="0.6" />
+                            android:textColor="?attr/colorOnSurface" />
                     </LinearLayout>
 
                     <com.google.android.material.button.MaterialButton
@@ -108,16 +106,16 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="?attr/colorOutline"
+                    android:layout_marginBottom="16dp"
                     android:alpha="0.2"
-                    android:layout_marginBottom="16dp" />
+                    android:background="?attr/colorOutline" />
 
                 <!-- Cargar -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -135,10 +133,10 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:alpha="0.6"
                             android:text="@string/load_from_file_hint"
                             android:textAppearance="?attr/textAppearanceBodySmall"
-                            android:textColor="?attr/colorOnSurface"
-                            android:alpha="0.6" />
+                            android:textColor="?attr/colorOnSurface" />
                     </LinearLayout>
 
                     <com.google.android.material.button.MaterialButton
@@ -170,16 +168,32 @@
         </com.google.android.material.card.MaterialCardView>
 
         <!-- ════════════════════════════════════════════
-             SECCIÓN 2 — Base de datos remota (FUTURO)
+             SECCIÓN 2 — Base de datos remota
              ════════════════════════════════════════════ -->
-        <TextView
-            android:layout_width="wrap_content"
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/section_db"
-            android:textAppearance="?attr/textAppearanceLabelLarge"
-            android:textColor="?attr/colorPrimary"
-            android:letterSpacing="0.08"
-            android:layout_marginBottom="12dp" />
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:letterSpacing="0.08"
+                android:text="@string/section_db"
+                android:textAppearance="?attr/textAppearanceLabelLarge"
+                android:textColor="?attr/colorPrimary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:alpha="0.5"
+                android:text="@string/db_info"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textColor="?attr/colorOnSurface" />
+
+        </LinearLayout>
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
@@ -187,8 +201,8 @@
             android:layout_marginBottom="24dp"
             app:cardCornerRadius="20dp"
             app:cardElevation="0dp"
-            app:strokeWidth="1dp"
-            app:strokeColor="?attr/colorOutline">
+            app:strokeColor="?attr/colorOutline"
+            app:strokeWidth="1dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -196,58 +210,106 @@
                 android:orientation="vertical"
                 android:padding="20dp">
 
-                <!-- Host MySQL -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilDbHost"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:hint="@string/db_host"
-                    app:helperText="@string/db_host_hint">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/editDbHost"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textUri"
-                        android:text="192.168.1." />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- Puerto -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilDbPort"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                <!-- Guardar -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
-                    android:hint="@string/db_port">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/editDbPort"
-                        android:layout_width="match_parent"
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:inputType="number"
-                        android:text="3306" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
-                <!-- Badge "Próximamente" -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnConnectDb"
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/save_to_bd"
+                            android:textAppearance="?attr/textAppearanceTitleSmall"
+                            android:textColor="?attr/colorOnSurface" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:alpha="0.6"
+                            android:text="@string/save_to_bd_hint"
+                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            android:textColor="?attr/colorOnSurface" />
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnSaveDB"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/btn_save"
+                        app:cornerRadius="12dp" />
+                </LinearLayout>
+
+                <!-- Divider -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="16dp"
+                    android:alpha="0.2"
+                    android:background="?attr/colorOutline" />
+
+                <!-- Cargar -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/btn_connect_db"
-                    android:enabled="false"
-                    app:cornerRadius="12dp" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/load_from_bd"
+                            android:textAppearance="?attr/textAppearanceTitleSmall"
+                            android:textColor="?attr/colorOnSurface" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:alpha="0.6"
+                            android:text="@string/load_from_bd_hint"
+                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            android:textColor="?attr/colorOnSurface" />
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnLoadDB"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/btn_load"
+                        app:cornerRadius="12dp" />
+                </LinearLayout>
+
+                <!-- Feedback de operación -->
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/progressDB"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:visibility="gone"
+                    app:trackCornerRadius="8dp" />
 
                 <TextView
+                    android:id="@+id/txtDBStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="@string/db_coming_soon"
                     android:textAppearance="?attr/textAppearanceBodySmall"
-                    android:textColor="?attr/colorOnSurface"
-                    android:alpha="0.5" />
+                    android:visibility="gone" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -258,19 +320,19 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:letterSpacing="0.08"
             android:text="@string/section_about"
             android:textAppearance="?attr/textAppearanceLabelLarge"
-            android:textColor="?attr/colorPrimary"
-            android:letterSpacing="0.08"
-            android:layout_marginBottom="12dp" />
+            android:textColor="?attr/colorPrimary" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="20dp"
             app:cardElevation="0dp"
-            app:strokeWidth="1dp"
-            app:strokeColor="?attr/colorOutline">
+            app:strokeColor="?attr/colorOutline"
+            app:strokeWidth="1dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -289,11 +351,11 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:alpha="0.6"
                     android:text="@string/about_description"
                     android:textAppearance="?attr/textAppearanceBodySmall"
-                    android:textColor="?attr/colorOnSurface"
-                    android:alpha="0.6"
-                    android:layout_marginTop="4dp" />
+                    android:textColor="?attr/colorOnSurface" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

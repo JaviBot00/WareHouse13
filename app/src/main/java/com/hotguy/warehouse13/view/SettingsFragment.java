@@ -16,6 +16,9 @@ import com.hotguy.warehouse13.controller.Controller;
 import com.hotguy.warehouse13.controller.FilePickerManager;
 import com.hotguy.warehouse13.databinding.FragmentSettingsBinding;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /**
  * SettingsFragment — Vista de configuración y persistencia de datos.
  * <p>
@@ -79,9 +82,11 @@ public class SettingsFragment extends Fragment {
         // ── Cargar desde fichero ──
         binding.btnLoadFile.setOnClickListener(v -> openLoadPicker());
 
-        // ── BD remota: solo placeholder, botón deshabilitado ──
-        // Se habilitará cuando se implemente la conexión MySQL
-        binding.btnConnectDb.setEnabled(false);
+        // ── Guardar en BD remota ──
+        binding.btnSaveDB.setOnClickListener(v -> saveToDatabase());
+
+        // ── Cargar desde BD remota ──
+        binding.btnLoadDB.setOnClickListener(v -> loadToDatabase()) ;
     }
 
     // ── Cargar ───────────────────────────────────────────────────────────────
@@ -121,6 +126,30 @@ public class SettingsFragment extends Fragment {
                 ok ? getString(R.string.toast_file_saved)
                     : getString(R.string.error_file_save),
                 !ok);
+        });
+    }
+
+    private void loadToDatabase() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            boolean ok = Controller.getSingleton().loadProductListFromDb() && Controller.getSingleton().loadRetiredListFromDb();
+            // Volver al hilo UI para el feedback
+            requireActivity().runOnUiThread(() ->
+                showSnackbar(
+                    ok ? "Guardado en BD" : "Error al guardar en BD",
+                    !ok));
+        });
+    }
+
+    private void saveToDatabase() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            boolean ok = Controller.getSingleton().saveProductListToDb() && Controller.getSingleton().saveRetiredListToDb();
+            // Volver al hilo UI para el feedback
+            requireActivity().runOnUiThread(() ->
+                showSnackbar(
+                    ok ? "Guardado en BD" : "Error al guardar en BD",
+                    !ok));
         });
     }
 

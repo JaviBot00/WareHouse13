@@ -24,47 +24,28 @@ import java.nio.charset.StandardCharsets;
  * ¿Por qué el ActivityResultLauncher vive aquí y no en el Fragment?
  * · Técnicamente Android obliga a registrarlo en el Fragment/Activity.
  * · Esta clase recibe el Fragment en el constructor y registra
- *   los launchers en su nombre, centralizando toda la lógica SAF.
+ * los launchers en su nombre, centralizando toda la lógica SAF.
  * <p>
  * Patrón de comunicación:
  * · Igual que OnEditStockListener en ProductsRVAdapter, usamos
- *   interfaces callback para notificar el resultado al Fragment
- *   sin que esta clase tenga que conocer la implementación concreta.
+ * interfaces callback para notificar el resultado al Fragment
+ * sin que esta clase tenga que conocer la implementación concreta.
  * <p>
  * Responsabilidad MVC:
  * · Esta clase pertenece a 'controller': no es lógica de negocio
- *   (eso es del Controller/DataAccess) ni es UI (eso es del Fragment).
- *   Es infraestructura de acceso a datos — igual que DataAccess.
+ * (eso es del Controller/DataAccess) ni es UI (eso es del Fragment).
+ * Es infraestructura de acceso a datos — igual que DataAccess.
  */
 public class FilePickerManager {
 
     // ── Interfaces callback ──────────────────────────────────────────────────
 
-    /**
-     * Notifica al Fragment que el usuario ha elegido dónde GUARDAR.
-     * El Fragment recibirá el Uri y llamará al Controller para escribir.
-     */
-    public interface OnSaveLocationPicked {
-        void onSaveLocationPicked(Uri uri);
-    }
-
-    /**
-     * Notifica al Fragment que el usuario ha elegido qué fichero CARGAR.
-     * El Fragment recibirá el Uri y llamará al Controller para leer.
-     */
-    public interface OnLoadFilePicked {
-        void onLoadFilePicked(Uri uri);
-    }
-
-    // ── Estado ──────────────────────────────────────────────────────────────
-
     private final ActivityResultLauncher<String> saveLauncher;
     private final ActivityResultLauncher<String[]> loadLauncher;
 
+    // ── Estado ──────────────────────────────────────────────────────────────
     private OnSaveLocationPicked saveCallback;
     private OnLoadFilePicked loadCallback;
-
-    // ── Constructor ─────────────────────────────────────────────────────────
 
     /**
      * Registra los ActivityResultLaunchers en el Fragment dado.
@@ -97,8 +78,6 @@ public class FilePickerManager {
             });
     }
 
-    // ── API pública ──────────────────────────────────────────────────────────
-
     /**
      * Abre el selector del sistema para elegir dónde guardar.
      * El resultado llega de forma asíncrona en el callback.
@@ -111,6 +90,8 @@ public class FilePickerManager {
         saveLauncher.launch(suggestedName);
     }
 
+    // ── Constructor ─────────────────────────────────────────────────────────
+
     /**
      * Abre el selector del sistema para elegir qué fichero cargar.
      * El resultado llega de forma asíncrona en el callback.
@@ -122,7 +103,7 @@ public class FilePickerManager {
         loadLauncher.launch(new String[]{"application/json", "text/plain"});
     }
 
-    // ── Helpers de I/O con Uri ───────────────────────────────────────────────
+    // ── API pública ──────────────────────────────────────────────────────────
 
     /**
      * Escribe un String JSON en el Uri elegido por el usuario.
@@ -161,5 +142,23 @@ public class FilePickerManager {
             e.printStackTrace();
             return null;
         }
+    }
+
+    // ── Helpers de I/O con Uri ───────────────────────────────────────────────
+
+    /**
+     * Notifica al Fragment que el usuario ha elegido dónde GUARDAR.
+     * El Fragment recibirá el Uri y llamará al Controller para escribir.
+     */
+    public interface OnSaveLocationPicked {
+        void onSaveLocationPicked(Uri uri);
+    }
+
+    /**
+     * Notifica al Fragment que el usuario ha elegido qué fichero CARGAR.
+     * El Fragment recibirá el Uri y llamará al Controller para leer.
+     */
+    public interface OnLoadFilePicked {
+        void onLoadFilePicked(Uri uri);
     }
 }

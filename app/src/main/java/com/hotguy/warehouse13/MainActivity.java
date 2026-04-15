@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.hotguy.warehouse13.controller.Controller;
 import com.hotguy.warehouse13.databinding.ActivityMainBinding;
 import com.hotguy.warehouse13.view.AddFragment;
 import com.hotguy.warehouse13.view.FiltersFragment;
@@ -42,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG_LIST = "tag_list";
     private static final String TAG_FILTERS = "tag_filters";
     private static final String TAG_SETTINGS = "tag_settings";
-    private static final String[] ALL_TAGS = { TAG_ADD, TAG_LIST, TAG_FILTERS, TAG_SETTINGS };
+    private static final String[] ALL_TAGS = {TAG_ADD, TAG_LIST, TAG_FILTERS, TAG_SETTINGS};
 
     private ActivityMainBinding binding;
 

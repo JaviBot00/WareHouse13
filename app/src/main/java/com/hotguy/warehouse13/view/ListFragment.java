@@ -40,8 +40,8 @@ public class ListFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         binding = FragmentListBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -61,23 +61,27 @@ public class ListFragment extends Fragment {
      */
     private void setupRecyclerView() {
         adapter = new ProductsRVAdapter(
-                Controller.getSingleton().listProducts(),
-                this::showEditStockDialog,
-                this::showWithdrawDialog);
+            Controller.getSingleton().listProducts(),
+            this::showEditStockDialog,
+            this::showWithdrawDialog);
         binding.rvProducts.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.rvProducts.setAdapter(adapter);
     }
 
     // ── Helpers ──
 
-    /** Notifica al adapter que el dataset cambió y actualiza el estado vacío. */
+    /**
+     * Notifica al adapter que el dataset cambió y actualiza el estado vacío.
+     */
     private void refreshList() {
         if (adapter != null)
             adapter.notifyDataSetChanged();
         updateEmptyState();
     }
 
-    /** Muestra u oculta el estado vacío según si hay productos. */
+    /**
+     * Muestra u oculta el estado vacío según si hay productos.
+     */
     private void updateEmptyState() {
         boolean isEmpty = Controller.getSingleton().listProducts() == null
             || Controller.getSingleton().listProducts().isEmpty();
@@ -95,39 +99,39 @@ public class ListFragment extends Fragment {
      */
     private void showEditStockDialog(String productCode) {
         View dialogView = LayoutInflater.from(requireContext())
-                .inflate(R.layout.dialog_edit_stock, null);
+            .inflate(R.layout.dialog_edit_stock, null);
 
         TextInputLayout til = dialogView.findViewById(R.id.tilStockChange);
         TextInputEditText edit = dialogView.findViewById(R.id.editStockChange);
 
         new MaterialAlertDialogBuilder(requireContext())
-                .setTitle(getString(R.string.dialog_edit_stock_title))
-                .setMessage(getString(R.string.dialog_edit_stock_msg, productCode))
-                .setView(dialogView)
-                .setPositiveButton(getString(R.string.btn_apply), (dialog, which) -> {
-                    String input = edit.getText() != null ? edit.getText().toString().trim() : "";
-                    if (input.isEmpty()) {
-                        til.setError(getString(R.string.error_required));
-                        return;
-                    }
-                    try {
-                        int change = Integer.parseInt(input);
-                        boolean ok = Controller.getSingleton().editStockForProduct(productCode, change);
-                        if (ok) {
-                            refreshList();
-                            Toast.makeText(requireContext(),
-                                    getString(R.string.toast_stock_updated), Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(requireContext(),
-                                    getString(R.string.error_stock_negative), Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (NumberFormatException e) {
+            .setTitle(getString(R.string.dialog_edit_stock_title))
+            .setMessage(getString(R.string.dialog_edit_stock_msg, productCode))
+            .setView(dialogView)
+            .setPositiveButton(getString(R.string.btn_apply), (dialog, which) -> {
+                String input = edit.getText() != null ? edit.getText().toString().trim() : "";
+                if (input.isEmpty()) {
+                    til.setError(getString(R.string.error_required));
+                    return;
+                }
+                try {
+                    int change = Integer.parseInt(input);
+                    boolean ok = Controller.getSingleton().editStockForProduct(productCode, change);
+                    if (ok) {
+                        refreshList();
                         Toast.makeText(requireContext(),
-                                getString(R.string.error_number_format), Toast.LENGTH_SHORT).show();
+                            getString(R.string.toast_stock_updated), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(requireContext(),
+                            getString(R.string.error_stock_negative), Toast.LENGTH_SHORT).show();
                     }
-                })
-                .setNegativeButton(getString(R.string.btn_cancel), null)
-                .show();
+                } catch (NumberFormatException e) {
+                    Toast.makeText(requireContext(),
+                        getString(R.string.error_number_format), Toast.LENGTH_SHORT).show();
+                }
+            })
+            .setNegativeButton(getString(R.string.btn_cancel), null)
+            .show();
     }
 
     // ── Diálogo: Retirar producto ──
@@ -140,21 +144,21 @@ public class ListFragment extends Fragment {
      */
     private void showWithdrawDialog(String productCode) {
         new MaterialAlertDialogBuilder(requireContext())
-                .setTitle(getString(R.string.dialog_withdraw_title))
-                .setMessage(getString(R.string.dialog_withdraw_msg, productCode))
-                .setPositiveButton(getString(R.string.btn_withdraw), (dialog, which) -> {
-                    boolean ok = Controller.getSingleton().withdrawProduct(productCode);
-                    if (ok) {
-                        refreshList();
-                        Toast.makeText(requireContext(),
-                                getString(R.string.toast_withdrawn), Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(requireContext(),
-                                getString(R.string.error_not_found), Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .setNegativeButton(getString(R.string.btn_cancel), null)
-                .show();
+            .setTitle(getString(R.string.dialog_withdraw_title))
+            .setMessage(getString(R.string.dialog_withdraw_msg, productCode))
+            .setPositiveButton(getString(R.string.btn_withdraw), (dialog, which) -> {
+                boolean ok = Controller.getSingleton().withdrawProduct(productCode);
+                if (ok) {
+                    refreshList();
+                    Toast.makeText(requireContext(),
+                        getString(R.string.toast_withdrawn), Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(requireContext(),
+                        getString(R.string.error_not_found), Toast.LENGTH_SHORT).show();
+                }
+            })
+            .setNegativeButton(getString(R.string.btn_cancel), null)
+            .show();
     }
 
     // ── Refresca la lista cuando volvemos a este fragment ──

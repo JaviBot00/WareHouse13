@@ -27,23 +27,11 @@ import java.util.List;
  */
 public class ProductsRVAdapter extends RecyclerView.Adapter<ProductsRVHolder> {
 
-    // ── Interfaces para los listeners de acción ──
-
-    public interface OnEditStockListener {
-        void onEditStock(String productCode);
-    }
-
-    public interface OnWithdrawListener {
-        void onWithdraw(String productCode);
-    }
-
-    // ── Estado ──
-
-    private List<Product> productList;
     private final OnEditStockListener editStockListener;
     private final OnWithdrawListener withdrawListener;
 
-    // ── Constructor ──
+    // ── Estado ──
+    private List<Product> productList;
 
     public ProductsRVAdapter(List<Product> productList,
             OnEditStockListener editStockListener,
@@ -52,8 +40,6 @@ public class ProductsRVAdapter extends RecyclerView.Adapter<ProductsRVHolder> {
         this.editStockListener = editStockListener;
         this.withdrawListener = withdrawListener;
     }
-
-    // ── Ciclo RecyclerView ──
 
     @NonNull
     @Override
@@ -65,17 +51,19 @@ public class ProductsRVAdapter extends RecyclerView.Adapter<ProductsRVHolder> {
                 withdrawListener);
     }
 
+    // ── Constructor ──
+
     @Override
     public void onBindViewHolder(@NonNull ProductsRVHolder holder, int position) {
         holder.loadData(productList.get(position));
     }
 
+    // ── Ciclo RecyclerView ──
+
     @Override
     public int getItemCount() {
         return productList != null ? productList.size() : 0;
     }
-
-    // ── Actualización de datos ──
 
     /**
      * Reemplaza la lista del adapter.
@@ -83,5 +71,17 @@ public class ProductsRVAdapter extends RecyclerView.Adapter<ProductsRVHolder> {
      */
     public void updateData(List<Product> newList) {
         this.productList = newList;
+    }
+
+    // ── Interfaces para los listeners de acción ──
+
+    public interface OnEditStockListener {
+        void onEditStock(String productCode);
+    }
+
+    // ── Actualización de datos ──
+
+    public interface OnWithdrawListener {
+        void onWithdraw(String productCode);
     }
 }

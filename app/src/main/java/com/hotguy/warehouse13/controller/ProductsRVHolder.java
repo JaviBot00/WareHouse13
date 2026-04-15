@@ -35,8 +35,8 @@ public class ProductsRVHolder extends RecyclerView.ViewHolder {
     private final ProductsRVAdapter.OnWithdrawListener withdrawListener;
 
     public ProductsRVHolder(@NonNull View itemView,
-            ProductsRVAdapter.OnEditStockListener editStockListener,
-            ProductsRVAdapter.OnWithdrawListener withdrawListener) {
+                            ProductsRVAdapter.OnEditStockListener editStockListener,
+                            ProductsRVAdapter.OnWithdrawListener withdrawListener) {
         super(itemView);
         binding = ItemProductCardBinding.bind(itemView);
         this.editStockListener = editStockListener;
@@ -61,8 +61,8 @@ public class ProductsRVHolder extends RecyclerView.ViewHolder {
         // ── Chip de tipo ──
         boolean isPerishable = p instanceof PerishableProduct;
         binding.chipType.setText(isPerishable
-                ? itemView.getContext().getString(R.string.type_perishable)
-                : itemView.getContext().getString(R.string.type_standard));
+            ? itemView.getContext().getString(R.string.type_perishable)
+            : itemView.getContext().getString(R.string.type_standard));
 
         // ── Fila caducidad (solo perecedero) ──
         if (isPerishable) {
@@ -75,9 +75,9 @@ public class ProductsRVHolder extends RecyclerView.ViewHolder {
                 // Colorear en rojo si ya está caducado
                 boolean expired = date.isBefore(LocalDate.now());
                 int color = itemView.getContext().getColor(
-                        expired
-                                ? R.color.colorError
-                                : R.color.colorWarning);
+                    expired
+                        ? R.color.colorError
+                        : R.color.colorWarning);
                 binding.txtExpiration.setTextColor(color);
             } catch (Exception e) {
                 binding.txtExpiration.setText(rawDate);

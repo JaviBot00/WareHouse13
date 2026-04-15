@@ -41,8 +41,8 @@ public class AddFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         binding = FragmentAddBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -120,7 +120,7 @@ public class AddFragment extends Fragment {
             stock = Integer.parseInt(stockStr);
         } catch (NumberFormatException e) {
             Toast.makeText(requireContext(),
-                    getString(R.string.error_number_format), Toast.LENGTH_SHORT).show();
+                getString(R.string.error_number_format), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -157,14 +157,18 @@ public class AddFragment extends Fragment {
 
     // ── Helpers ──
 
-    /** Extrae texto de un EditText y elimina espacios sobrantes. */
+    /**
+     * Extrae texto de un EditText y elimina espacios sobrantes.
+     */
     private String getText(android.widget.EditText edit) {
         return edit != null && edit.getText() != null
-                ? edit.getText().toString().trim()
-                : "";
+            ? edit.getText().toString().trim()
+            : "";
     }
 
-    /** Elimina todos los mensajes de error de los campos. */
+    /**
+     * Elimina todos los mensajes de error de los campos.
+     */
     private void clearErrors() {
         binding.tilCode.setError(null);
         binding.tilDesc.setError(null);
@@ -173,7 +177,9 @@ public class AddFragment extends Fragment {
         binding.tilExpiration.setError(null);
     }
 
-    /** Limpia el formulario tras un añadido exitoso. */
+    /**
+     * Limpia el formulario tras un añadido exitoso.
+     */
     private void clearForm() {
         binding.editCode.getText().clear();
         binding.editDesc.getText().clear();

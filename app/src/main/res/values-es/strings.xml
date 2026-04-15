@@ -59,15 +59,14 @@
     <string name="section_about">Acerca de</string>
     <string name="save_to_file">Guardar en fichero</string>
     <string name="save_to_file_hint">Exporta todos los productos a products.json</string>
+    <string name="save_to_bd_hint">Exporta todos los productos a WareHouse13.db</string>
     <string name="load_from_file">Cargar desde fichero</string>
     <string name="load_from_file_hint">Importa productos desde products.json</string>
+    <string name="load_from_bd_hint">Importa productos desde WareHouse13.db</string>
     <string name="btn_save">Guardar</string>
     <string name="btn_load">Cargar</string>
-    <string name="db_host">Host MySQL (IP)</string>
-    <string name="db_host_hint">ej. 192.168.1.100</string>
-    <string name="db_port">Puerto</string>
     <string name="btn_connect_db">Conectar a base de datos</string>
-    <string name="db_coming_soon">Próximamente — conexión WiFi local a MySQL</string>
+    <string name="db_info">Conexión WiFi a MySQL</string>
 
     <!-- Diálogos -->
     <string name="dialog_edit_stock_title">Editar stock</string>
@@ -95,4 +94,6 @@
     <string name="error_price_range">El precio mínimo debe ser menor que el máximo</string>
     <string name="error_file_save">Error al guardar el fichero</string>
     <string name="error_file_load">Error al cargar el fichero</string>
+    <string name="save_to_bd">Guardar en BD</string>
+    <string name="load_from_bd">Cargar desde BD</string>
 </resources>
