@@ -54,7 +54,7 @@ public class ProductsRVHolder extends RecyclerView.ViewHolder {
     public void loadData(Product p) {
         // ── Campos comunes ──
         binding.txtDescription.setText(p.getDescription());
-        binding.txtCode.setText(p.getProductCode());
+        binding.txtCode.setText(p.getCode());
         binding.txtPrice.setText(String.format("%.2f €", p.getPrice()));
         binding.txtStock.setText(String.valueOf(p.getStock()));
 
@@ -88,13 +88,13 @@ public class ProductsRVHolder extends RecyclerView.ViewHolder {
 
         // ── Botones de acción ──
         if (editStockListener != null) {
-            binding.btnEditStock.setOnClickListener(v -> editStockListener.onEditStock(p.getProductCode()));
+            binding.btnEditStock.setOnClickListener(v -> editStockListener.onEditStock(p.getCode()));
         } else {
             binding.btnEditStock.setVisibility(View.GONE);
         }
 
         if (withdrawListener != null) {
-            binding.btnWithdraw.setOnClickListener(v -> withdrawListener.onWithdraw(p.getProductCode()));
+            binding.btnWithdraw.setOnClickListener(v -> withdrawListener.onWithdraw(p.getCode()));
         } else {
             binding.btnWithdraw.setVisibility(View.GONE);
         }

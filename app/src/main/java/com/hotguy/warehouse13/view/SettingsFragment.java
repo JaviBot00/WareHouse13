@@ -20,47 +20,49 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * SettingsFragment — Vista de configuración y persistencia de datos.
+ * SettingsFragment — View for data persistence settings.
  * <p>
- * Responsabilidad MVC:
- * · Gestiona la UI de guardar/cargar (botones, feedback).
- * · Delega la apertura del selector a FilePickerManager.
- * · Cuando recibe el Uri (callback), llama al Controller para
- * leer o escribir los datos. Nunca toca DataAccess directamente.
+ * MVC responsibility:
+ * Manages the save/load UI (buttons, feedback). Delegates file picking
+ * to {@link FilePickerManager} and data operations to the Controller.
+ * Never accesses DataAccess or DatabaseAccess directly.
  * <p>
- * Flujo guardar:
- * btnSave → FilePickerManager.openSavePicker()
- * → [usuario elige ubicación en el selector del sistema]
- * → callback onSaveLocationPicked(uri)
- * → FilePickerManager.writeToUri(uri, json)   ← escribe el fichero
- * → showSnackbar()
+ * Save flow (file):
+ * btnSaveFile → FilePickerManager.openSavePicker()
+ * → [user picks location] → callback → FilePickerManager.writeToUri()
  * <p>
- * Flujo cargar:
- * btnLoad → FilePickerManager.openLoadPicker()
- * → [usuario elige fichero en el selector del sistema]
- * → callback onLoadFilePicked(uri)
- * → FilePickerManager.readFromUri(uri)         ← lee el fichero
- * → Controller.loadProductListFromJson(json)   ← parsea y carga
- * → showSnackbar()
+ * Load flow (file):
+ * btnLoadFile → FilePickerManager.openLoadPicker()
+ * → [user picks file] → callback → Controller.loadProductListFromJson()
  * <p>
- * ¿Por qué FilePickerManager se crea en onCreate() y no en onCreateView()?
- * · Los ActivityResultLaunchers deben registrarse ANTES de onStart().
- * · onCreate() es el momento correcto y seguro.
+ * Load flow (DB):
+ * btnLoadDB → ExecutorService → Controller.loadProductListFromDb()
+ * → runOnUiThread → Snackbar feedback
+ * <p>
+ * Note on "Save to DB":
+ * There is no bulk save operation anymore. Every mutating action
+ * (add, edit stock, withdraw) is persisted to the DB immediately
+ * by the Controller at the time it occurs. The save button has
+ * been removed from the layout accordingly.
  */
 public class SettingsFragment extends Fragment {
 
+    /**
+     * Single background thread for DB network operations.
+     */
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private FragmentSettingsBinding binding;
     private FilePickerManager filePickerManager;
 
     public SettingsFragment() {
     }
 
-    // ── Ciclo de vida ────────────────────────────────────────────────────────
+    // ── Lifecycle ─────────────────────────────────────────────────────────────
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // IMPORTANTE: los launchers se registran aquí, antes de onCreateView
+        // Launchers must be registered before onStart()
         filePickerManager = new FilePickerManager(this);
     }
 
@@ -76,28 +78,22 @@ public class SettingsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // ── Guardar en fichero ──
         binding.btnSaveFile.setOnClickListener(v -> openSavePicker());
-
-        // ── Cargar desde fichero ──
         binding.btnLoadFile.setOnClickListener(v -> openLoadPicker());
+        binding.btnLoadDB.setOnClickListener(v -> loadFromDatabase());
 
-        // ── Guardar en BD remota ──
-        binding.btnSaveDB.setOnClickListener(v -> saveToDatabase());
-
-        // ── Cargar desde BD remota ──
-        binding.btnLoadDB.setOnClickListener(v -> loadToDatabase()) ;
+        // btnSaveDB has been removed from the layout:
+        // saves are now performed per-operation inside the Controller.
     }
 
-    // ── Cargar ───────────────────────────────────────────────────────────────
+    // ── File: load ────────────────────────────────────────────────────────────
 
     /**
-     * Abre el selector SAF para elegir qué fichero cargar.
-     * Solo muestra ficheros JSON y de texto plano.
+     * Opens the SAF picker to choose a JSON file to load.
+     * Only JSON and plain-text files are shown.
      */
     private void openLoadPicker() {
         filePickerManager.openLoadPicker(uri -> {
-            // Este callback llega cuando el usuario elige el fichero
             String json = filePickerManager.readFromUri(requireContext(), uri);
             if (json == null || json.isEmpty()) {
                 showSnackbar(getString(R.string.error_file_load), true);
@@ -111,15 +107,14 @@ public class SettingsFragment extends Fragment {
         });
     }
 
-    // ── Guardar ─────────────────────────────────────────────────────────────
+    // ── File: save ────────────────────────────────────────────────────────────
 
     /**
-     * Abre el selector SAF para elegir dónde guardar.
-     * El nombre sugerido es "products.json" pero el usuario puede cambiarlo.
+     * Opens the SAF picker to choose where to save the current product list.
+     * The suggested filename is "products.json".
      */
     private void openSavePicker() {
         filePickerManager.openSavePicker("products.json", uri -> {
-            // Este callback llega cuando el usuario confirma la ubicación
             String json = new Gson().toJson(Controller.getSingleton().listProducts());
             boolean ok = filePickerManager.writeToUri(requireContext(), uri, json);
             showSnackbar(
@@ -129,41 +124,36 @@ public class SettingsFragment extends Fragment {
         });
     }
 
-    private void loadToDatabase() {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> {
-            boolean ok = Controller.getSingleton().loadProductListFromDb() && Controller.getSingleton().loadRetiredListFromDb();
-            // Volver al hilo UI para el feedback
-            requireActivity().runOnUiThread(() ->
-                showSnackbar(
-                    ok ? "Guardado en BD" : "Error al guardar en BD",
-                    !ok));
-        });
-    }
-
-    private void saveToDatabase() {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> {
-            boolean ok = Controller.getSingleton().saveProductListToDb() && Controller.getSingleton().saveRetiredListToDb();
-            // Volver al hilo UI para el feedback
-            requireActivity().runOnUiThread(() ->
-                showSnackbar(
-                    ok ? "Guardado en BD" : "Error al guardar en BD",
-                    !ok));
-        });
-    }
-
-    // ── Helpers ──
-
-    private void showProgress(boolean show) {
-        binding.progressFile.setVisibility(show ? View.VISIBLE : View.GONE);
-    }
+    // ── DB: load ──────────────────────────────────────────────────────────────
 
     /**
-     * Muestra un Snackbar de feedback.
+     * Loads active and retired product lists from the remote DB.
+     * <p>
+     * The operation runs on a background thread because
+     * {@link Controller#loadProductListFromDb()} performs a blocking HTTP request.
+     * UI feedback is posted back on the main thread.
+     */
+    private void loadFromDatabase() {
+        executor.execute(() -> {
+            boolean ok = Controller.getSingleton().loadProductListFromDb()
+                && Controller.getSingleton().loadRetiredListFromDb();
+
+            if (getActivity() == null) return;
+            requireActivity().runOnUiThread(() ->
+                showSnackbar(
+                    ok ? getString(R.string.toast_file_loaded)
+                        : getString(R.string.error_file_load),
+                    !ok));
+        });
+    }
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+
+    /**
+     * Displays a short Snackbar with optional error styling.
      *
-     * @param message texto a mostrar
-     * @param isError si true, usa color de error
+     * @param message text to show
+     * @param isError if {@code true}, applies the error background color
      */
     private void showSnackbar(String message, boolean isError) {
         if (getView() == null) return;

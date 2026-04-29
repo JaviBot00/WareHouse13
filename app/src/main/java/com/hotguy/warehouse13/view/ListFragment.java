@@ -19,19 +19,28 @@ import com.hotguy.warehouse13.controller.Controller;
 import com.hotguy.warehouse13.controller.ProductsRVAdapter;
 import com.hotguy.warehouse13.databinding.FragmentListBinding;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /**
- * ListFragment — Vista de la lista completa de productos activos.
+ * ListFragment — View for the full list of active products.
  * <p>
- * Responsabilidad MVC:
- * · Pide la lista al Controlador vía getProductList().
- * · Delega la representación al Adapter/Holder (sin tocar el Modelo).
- * · Lanza diálogos para editar stock y retirar productos.
+ * MVC responsibility:
+ * Requests data from the Controller and delegates rendering to the
+ * Adapter/Holder. Launches dialogs for stock editing and product retirement.
  * <p>
- * El Adapter recibe un listener del Fragment para cada acción de card,
- * manteniendo la separación: el Holder notifica → Fragment actúa.
+ * Threading:
+ * {@link Controller#editStockForProduct} and {@link Controller#withdrawProduct}
+ * are blocking (perform HTTP requests via DatabaseAccess).
+ * Both are dispatched on a single-thread {@link ExecutorService};
+ * UI updates are posted back on the main thread.
  */
 public class ListFragment extends Fragment {
 
+    /**
+     * Single background thread for DB network operations.
+     */
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private FragmentListBinding binding;
     private ProductsRVAdapter adapter;
 
@@ -54,10 +63,10 @@ public class ListFragment extends Fragment {
     }
 
     /**
-     * Configura el RecyclerView con el Adapter.
-     * Inyecta dos listeners para las acciones de cada card:
-     * · onEditStock → diálogo para modificar stock
-     * · onWithdraw → diálogo de confirmación de baja
+     * Configures the RecyclerView with the Adapter.
+     * Injects two action listeners for each card:
+     * · onEditStock → dialog to modify stock
+     * · onWithdraw  → confirmation dialog for retirement
      */
     private void setupRecyclerView() {
         adapter = new ProductsRVAdapter(
@@ -68,19 +77,18 @@ public class ListFragment extends Fragment {
         binding.rvProducts.setAdapter(adapter);
     }
 
-    // ── Helpers ──
+    // ── Helpers ──────────────────────────────────────────────────────────────
 
     /**
-     * Notifica al adapter que el dataset cambió y actualiza el estado vacío.
+     * Notifies the adapter of dataset changes and updates the empty state.
      */
     private void refreshList() {
-        if (adapter != null)
-            adapter.notifyDataSetChanged();
+        if (adapter != null) adapter.notifyDataSetChanged();
         updateEmptyState();
     }
 
     /**
-     * Muestra u oculta el estado vacío según si hay productos.
+     * Shows or hides the empty-state layout depending on the product list size.
      */
     private void updateEmptyState() {
         boolean isEmpty = Controller.getSingleton().listProducts() == null
@@ -89,13 +97,16 @@ public class ListFragment extends Fragment {
         binding.rvProducts.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
     }
 
-    // ── Diálogo: Editar stock ──
+    // ── Dialog: Edit stock ────────────────────────────────────────────────────
 
     /**
-     * Muestra un diálogo con un campo numérico para el cambio de stock.
-     * Permite valores negativos (retirar unidades) y positivos (añadir).
+     * Shows a dialog with a signed numeric field for the stock change.
+     * Positive values add units; negative values remove them.
+     * <p>
+     * On confirmation, {@link Controller#editStockForProduct} is called
+     * on a background thread since it performs an HTTP request.
      *
-     * @param productCode código del producto a modificar
+     * @param productCode code of the product to update
      */
     private void showEditStockDialog(String productCode) {
         View dialogView = LayoutInflater.from(requireContext())
@@ -109,64 +120,88 @@ public class ListFragment extends Fragment {
             .setMessage(getString(R.string.dialog_edit_stock_msg, productCode))
             .setView(dialogView)
             .setPositiveButton(getString(R.string.btn_apply), (dialog, which) -> {
-                String input = edit.getText() != null ? edit.getText().toString().trim() : "";
+                String input = edit.getText() != null
+                    ? edit.getText().toString().trim() : "";
                 if (input.isEmpty()) {
                     til.setError(getString(R.string.error_required));
                     return;
                 }
+
+                int change;
                 try {
-                    int change = Integer.parseInt(input);
-                    boolean ok = Controller.getSingleton().editStockForProduct(productCode, change);
-                    if (ok) {
-                        refreshList();
-                        Toast.makeText(requireContext(),
-                            getString(R.string.toast_stock_updated), Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(requireContext(),
-                            getString(R.string.error_stock_negative), Toast.LENGTH_SHORT).show();
-                    }
+                    change = Integer.parseInt(input);
                 } catch (NumberFormatException e) {
                     Toast.makeText(requireContext(),
-                        getString(R.string.error_number_format), Toast.LENGTH_SHORT).show();
+                        getString(R.string.error_number_format),
+                        Toast.LENGTH_SHORT).show();
+                    return;
                 }
+
+                // ── Background thread: editStockForProduct is blocking ──
+                executor.execute(() -> {
+                    boolean ok = Controller.getSingleton()
+                        .editStockForProduct(productCode, change);
+
+                    if (getActivity() == null) return;
+                    requireActivity().runOnUiThread(() -> {
+                        if (ok) {
+                            refreshList();
+                            Toast.makeText(requireContext(),
+                                getString(R.string.toast_stock_updated),
+                                Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(requireContext(),
+                                getString(R.string.error_stock_negative),
+                                Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                });
             })
             .setNegativeButton(getString(R.string.btn_cancel), null)
             .show();
     }
 
-    // ── Diálogo: Retirar producto ──
+    // ── Dialog: Withdraw product ──────────────────────────────────────────────
 
     /**
-     * Diálogo de confirmación antes de retirar un producto del almacén.
-     * El producto pasa a la lista de retirados en el Controlador.
+     * Confirmation dialog before retiring a product from the warehouse.
+     * <p>
+     * On confirmation, {@link Controller#withdrawProduct} is called
+     * on a background thread since it performs an HTTP request.
      *
-     * @param productCode código del producto a retirar
+     * @param productCode code of the product to retire
      */
     private void showWithdrawDialog(String productCode) {
         new MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.dialog_withdraw_title))
             .setMessage(getString(R.string.dialog_withdraw_msg, productCode))
             .setPositiveButton(getString(R.string.btn_withdraw), (dialog, which) -> {
-                boolean ok = Controller.getSingleton().withdrawProduct(productCode);
-                if (ok) {
-                    refreshList();
-                    Toast.makeText(requireContext(),
-                        getString(R.string.toast_withdrawn), Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(requireContext(),
-                        getString(R.string.error_not_found), Toast.LENGTH_SHORT).show();
-                }
+
+                // ── Background thread: withdrawProduct is blocking ──
+                executor.execute(() -> {
+                    boolean ok = Controller.getSingleton()
+                        .withdrawProduct(productCode);
+
+                    if (getActivity() == null) return;
+                    requireActivity().runOnUiThread(() -> {
+                        if (ok) {
+                            refreshList();
+                            Toast.makeText(requireContext(),
+                                getString(R.string.toast_withdrawn),
+                                Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(requireContext(),
+                                getString(R.string.error_not_found),
+                                Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                });
             })
             .setNegativeButton(getString(R.string.btn_cancel), null)
             .show();
     }
 
-    // ── Refresca la lista cuando volvemos a este fragment ──
-    @Override
-    public void onResume() {
-        super.onResume();
-        refreshList();
-    }
+    // ── Lifecycle ─────────────────────────────────────────────────────────────
 
     @Override
     public void onHiddenChanged(boolean hidden) {

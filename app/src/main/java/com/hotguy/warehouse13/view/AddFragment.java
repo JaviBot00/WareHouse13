@@ -17,23 +17,28 @@ import com.hotguy.warehouse13.databinding.FragmentAddBinding;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
- * AddFragment — Vista para añadir productos al almacén.
+ * AddFragment — View for adding products to the warehouse.
  * <p>
- * Responsabilidad MVC:
- * · Recoge datos del usuario desde los campos del formulario.
- * · Construye un JSON y delega al Controlador (nunca toca el Modelo).
- * · Muestra feedback al usuario según el resultado.
+ * MVC responsibility:
+ * Collects form data, builds a JSON string, and delegates to the
+ * Controller. Never touches model classes directly.
  * <p>
- * Funcionalidades:
- * · Toggle para indicar si el producto es perecedero.
- * · Campo de fecha de caducidad que aparece/desaparece según el toggle.
- * · Validaciones básicas de campos vacíos antes de llamar al Controlador.
- * · Limpieza del formulario tras un añadido exitoso.
+ * Threading:
+ * {@link Controller#addProduct} is blocking (performs an HTTP request
+ * via {@link com.hotguy.warehouse13.controller.DatabaseAccess}).
+ * The call is therefore dispatched on a single-thread
+ * {@link ExecutorService}; UI feedback is posted back on the main thread.
  */
 public class AddFragment extends Fragment {
 
+    /**
+     * Single background thread for DB network operations.
+     */
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private FragmentAddBinding binding;
 
     public AddFragment() {
@@ -51,31 +56,25 @@ public class AddFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // ── Toggle perecedero: mostrar/ocultar campo caducidad ──
-        binding.switchPerishable.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        // Show / hide expiration field based on perishable toggle
+        binding.switchPerishable.setOnCheckedChangeListener((btn, isChecked) -> {
             binding.tilExpiration.setVisibility(isChecked ? View.VISIBLE : View.GONE);
             if (!isChecked) {
-                // Limpiar el campo si se desactiva
                 if (binding.editExpiration.getText() != null)
                     binding.editExpiration.getText().clear();
                 binding.tilExpiration.setError(null);
             }
         });
 
-        // ── Botón Añadir ──
         binding.btnAdd.setOnClickListener(v -> attemptAddProduct());
     }
 
     /**
-     * Recoge y valida los campos del formulario.
-     * Si todo es correcto, construye el JSON y llama al Controlador.
-     * <p>
-     * PREGUNTA GUIADA:
-     * ¿Por qué usamos un LinkedHashMap + Gson en vez de construir
-     * el String JSON a mano con concatenación? Piénsalo antes de seguir.
+     * Validates form fields, builds the product JSON, and calls the Controller
+     * on a background thread. UI is updated on the main thread once the
+     * network operation completes.
      */
     private void attemptAddProduct() {
-        // Limpiar errores previos
         clearErrors();
 
         String code = getText(binding.editCode);
@@ -85,9 +84,8 @@ public class AddFragment extends Fragment {
         boolean isPerishable = binding.switchPerishable.isChecked();
         String expiration = isPerishable ? getText(binding.editExpiration) : "";
 
-        // ── Validaciones de campo vacío ──
+        // ── Field validation ──
         boolean valid = true;
-
         if (code.isEmpty()) {
             binding.tilCode.setError(getString(R.string.error_required));
             valid = false;
@@ -108,11 +106,9 @@ public class AddFragment extends Fragment {
             binding.tilExpiration.setError(getString(R.string.error_required));
             valid = false;
         }
+        if (!valid) return;
 
-        if (!valid)
-            return;
-
-        // ── Conversión de tipos ──
+        // ── Type conversion ──
         double price;
         int stock;
         try {
@@ -124,41 +120,56 @@ public class AddFragment extends Fragment {
             return;
         }
 
-        // ── Construcción del JSON para el Controlador ──
-        // La Vista NO crea objetos del Modelo: usa un Map + Gson
-        // y delega la creación del objeto al Controlador.
+        // ── Build JSON for the Controller ──
+        // The View never instantiates model objects: it passes a JSON map
+        // and lets the Controller parse and create the Product.
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("productCode", code.toUpperCase());
         data.put("description", description);
         data.put("price", price);
         data.put("stock", stock);
-        if (isPerishable) {
-            data.put("expirationDate", expiration);
-        }
+        if (isPerishable) data.put("expirationDate", expiration);
 
         String jsonProduct = new Gson().toJson(data);
 
-        // ── Llamada al Controlador ──
-        try {
-            boolean added = Controller.getSingleton().addProduct(isPerishable, jsonProduct);
-            if (added) {
-                Toast.makeText(requireContext(),
-                    getString(R.string.toast_item_added), Toast.LENGTH_SHORT).show();
-                clearForm();
-            } else {
-                // El Controlador devuelve false si el código ya existe
-                binding.tilCode.setError(getString(R.string.error_duplicate_code));
-            }
-        } catch (Exception e) {
-            binding.tilCode.setError(e.getMessage());
-        }
+        // Disable the button while the request is in flight
+        binding.btnAdd.setEnabled(false);
 
+        // ── Background thread: addProduct is blocking (HTTP request) ──
+        executor.execute(() -> {
+            boolean added;
+            String errorMessage = null;
+            try {
+                added = Controller.getSingleton().addProduct(isPerishable, jsonProduct);
+            } catch (Exception e) {
+                added = false;
+                errorMessage = e.getMessage();
+            }
+
+            final boolean result = added;
+            final String finalError = errorMessage;
+
+            // ── Return to main thread for UI feedback ──
+            if (getActivity() == null) return;
+            requireActivity().runOnUiThread(() -> {
+                binding.btnAdd.setEnabled(true);
+                if (result) {
+                    Toast.makeText(requireContext(),
+                        getString(R.string.toast_item_added), Toast.LENGTH_SHORT).show();
+                    clearForm();
+                } else if (finalError != null) {
+                    binding.tilCode.setError(finalError);
+                } else {
+                    binding.tilCode.setError(getString(R.string.error_duplicate_code));
+                }
+            });
+        });
     }
 
-    // ── Helpers ──
+    // ── Helpers ──────────────────────────────────────────────────────────────
 
     /**
-     * Extrae texto de un EditText y elimina espacios sobrantes.
+     * Extracts trimmed text from an EditText, returning an empty string if null.
      */
     private String getText(android.widget.EditText edit) {
         return edit != null && edit.getText() != null
@@ -167,7 +178,7 @@ public class AddFragment extends Fragment {
     }
 
     /**
-     * Elimina todos los mensajes de error de los campos.
+     * Clears all field error messages.
      */
     private void clearErrors() {
         binding.tilCode.setError(null);
@@ -178,7 +189,7 @@ public class AddFragment extends Fragment {
     }
 
     /**
-     * Limpia el formulario tras un añadido exitoso.
+     * Resets all form fields after a successful add.
      */
     private void clearForm() {
         binding.editCode.getText().clear();
