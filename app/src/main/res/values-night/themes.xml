@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
     ╔══════════════════════════════════════════════════════╗
     ║  res/values-night/themes.xml                         ║
     ║  MODO OSCURO — Android lo carga automáticamente      ║
@@ -75,7 +74,9 @@
         <item name="android:background">@color/colorNavBar</item>
         <item name="itemIconTint">@color/bottom_nav_item_color</item>
         <item name="itemTextColor">@color/bottom_nav_item_color</item>
-        <item name="itemActiveIndicatorStyle">@style/Widget.WareHouse13.BottomNavigation.ActiveIndicator</item>
+        <item name="itemActiveIndicatorStyle">
+            @style/Widget.WareHouse13.BottomNavigation.ActiveIndicator
+        </item>
     </style>
 
     <style name="Widget.WareHouse13.BottomNavigation.ActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">

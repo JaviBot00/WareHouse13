@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
     fragment_list.xml
     ════════════════════════════════════════════════════════
     Lista de todos los productos activos.
@@ -10,8 +9,7 @@
         └─ FAB (modificar stock / retirar)
     ════════════════════════════════════════════════════════
 -->
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -34,26 +32,26 @@
         android:id="@+id/layoutEmpty"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:gravity="center"
+        android:orientation="vertical"
         android:visibility="gone"
         tools:visibility="gone">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
             android:text="📦"
-            android:textSize="56sp"
-            android:layout_marginBottom="16dp" />
+            android:textSize="56sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:alpha="0.5"
+            android:gravity="center"
             android:text="@string/empty_warehouse"
             android:textAppearance="?attr/textAppearanceTitleMedium"
-            android:textColor="?attr/colorOnBackground"
-            android:alpha="0.5"
-            android:gravity="center" />
+            android:textColor="?attr/colorOnBackground" />
     </LinearLayout>
 
     <!-- ── FAB ── -->

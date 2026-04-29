@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
     item_product_card.xml
     ════════════════════════════════════════════════════════
     Card para cada producto en el RecyclerView.
@@ -33,28 +32,28 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_marginBottom="10dp"
             android:gravity="center_vertical"
-            android:layout_marginBottom="10dp">
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/txtDescription"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="2"
                 android:textAppearance="?attr/textAppearanceTitleMedium"
                 android:textColor="?attr/colorOnSurface"
                 android:textStyle="bold"
-                android:maxLines="2"
-                android:ellipsize="end"
                 tools:text="Teclado mecánico RGB con switches rojos" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipType"
+                style="@style/Widget.Material3.Chip.Assist"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/Widget.Material3.Chip.Assist"
                 android:textSize="10sp"
                 app:chipMinHeight="26dp"
                 tools:text="Perecedero" />
@@ -64,26 +63,26 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="?attr/colorOutline"
+            android:layout_marginBottom="10dp"
             android:alpha="0.2"
-            android:layout_marginBottom="10dp" />
+            android:background="?attr/colorOutline" />
 
         <!-- ── Fila 2: Código ── -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_marginBottom="6dp"
             android:gravity="center_vertical"
-            android:layout_marginBottom="6dp">
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:minWidth="64dp"
                 android:text="@string/code"
                 android:textAppearance="?attr/textAppearanceLabelSmall"
-                android:textColor="?attr/colorPrimary"
-                android:layout_marginEnd="8dp"
-                android:minWidth="64dp" />
+                android:textColor="?attr/colorPrimary" />
 
             <TextView
                 android:id="@+id/txtCode"
@@ -107,17 +106,17 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:minWidth="64dp"
                     android:text="@string/price"
                     android:textAppearance="?attr/textAppearanceLabelSmall"
-                    android:textColor="?attr/colorPrimary"
-                    android:layout_marginEnd="8dp"
-                    android:minWidth="64dp" />
+                    android:textColor="?attr/colorPrimary" />
 
                 <TextView
                     android:id="@+id/txtPrice"
@@ -134,17 +133,17 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:minWidth="48dp"
                     android:text="@string/stock"
                     android:textAppearance="?attr/textAppearanceLabelSmall"
-                    android:textColor="?attr/colorPrimary"
-                    android:layout_marginEnd="8dp"
-                    android:minWidth="48dp" />
+                    android:textColor="?attr/colorPrimary" />
 
                 <TextView
                     android:id="@+id/txtStock"
@@ -161,19 +160,19 @@
             android:id="@+id/rowExpiration"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
             android:layout_marginTop="6dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
             android:visibility="gone">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:minWidth="64dp"
                 android:text="@string/expiration_date"
                 android:textAppearance="?attr/textAppearanceLabelSmall"
-                android:textColor="@color/colorWarning"
-                android:layout_marginEnd="8dp"
-                android:minWidth="64dp" />
+                android:textColor="@color/colorWarning" />
 
             <TextView
                 android:id="@+id/txtExpiration"
@@ -188,9 +187,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_marginTop="12dp"
-            android:gravity="end">
+            android:gravity="end"
+            android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnEditStock"
@@ -208,10 +207,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
                 android:text="@string/btn_withdraw"
-                android:textSize="12sp"
-                app:strokeColor="?attr/colorError"
                 android:textColor="?attr/colorError"
-                app:cornerRadius="12dp" />
+                android:textSize="12sp"
+                app:cornerRadius="12dp"
+                app:strokeColor="?attr/colorError" />
         </LinearLayout>
 
     </LinearLayout>
