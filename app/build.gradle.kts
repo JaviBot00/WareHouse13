@@ -39,13 +39,11 @@ android {
 }
 
 dependencies {
-    // Google libraries
-    implementation(libs.gson)
 
     // My libraries
+    implementation(libs.gson)
     implementation(libs.roundedimageview)
-    // MySQL - JDBC
-    implementation(libs.mysql.connector.java)
+    implementation(libs.okhttp)
 
     // AndroidX libraries
     implementation(libs.appcompat)

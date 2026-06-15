@@ -47,6 +47,10 @@ public class DataAccess {
         return parseFromJsonArray(String.join("", lines));
     }
 
+    public static boolean saveDataToFile(Context context, String file, List<Product> products) {
+        return saveData(context, file, GSON.toJson(parseToJsonArray(products)));
+    }
+
     private static List<Product> parseFromJsonArray(String jsonContent) {
         List<Product> products = new ArrayList<>();
         JsonArray jsonArray = GSON.fromJson(jsonContent, JsonArray.class);
@@ -61,10 +65,6 @@ public class DataAccess {
             }
         }
         return products;
-    }
-
-    public static boolean saveDataToFile(Context context, String file, List<Product> products) {
-        return saveData(context, file, GSON.toJson(parseToJsonArray(products)));
     }
 
     private static JsonArray parseToJsonArray(List<Product> products) {

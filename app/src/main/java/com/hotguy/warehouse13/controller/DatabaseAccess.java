@@ -9,33 +9,28 @@ import com.hotguy.warehouse13.model.PerishableProduct;
 import com.hotguy.warehouse13.model.Product;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 /**
- * HTTP client that communicates with the WareHouse13 Servlet API.
+ * Cliente de la API REST del servidor Warehouse13.
  * <p>
- * Replaces the former JDBC implementation — all data operations
- * are now delegated to the remote Tomcat server via HTTP requests.
- * The public API (method names and signatures) is identical to the
- * previous version so {@link Controller} requires no changes.
+ * Responsabilidad única: sabe QUÉ pedir (endpoints, parámetros,
+ * interpretación de respuestas JSON). No sabe CÓMO hacer HTTP —
+ * eso lo delega en {@link HttpClient}.
  * <p>
- * Every method in this class is <strong>blocking</strong>: callers
- * must invoke them from a background thread (e.g. {@code ExecutorService}).
+ * Todos los métodos son estáticos y bloqueantes; el llamador
+ * ({@link Controller}) debe invocarlos desde un hilo en segundo plano.
  */
 public class DatabaseAccess {
 
     private static final String TAG = "DatabaseAccess";
 
     /**
-     * Base URL of the Servlet deployment.
-     * Replace with the actual IP of the machine running Docker.
-     * Example: "http://192.168.1.50:8080/WareHouse13-Servlets"
+     * URL base del servidor Tomcat con los Servlets.
+     * Sustituye la IP por la del equipo que ejecuta Docker.
+     * Ejemplo: {@code "http://192.168.1.50:8080/WareHouse13-Servlets"}
      */
     private static final String BASE_URL = "http://192.168.56.79:8080/WareHouse13-Servlets";
 
@@ -51,36 +46,35 @@ public class DatabaseAccess {
     private static final String EP_UNRETIRE = "/reactivar";
     private static final String EP_DELETE = "/eliminar";
 
-    // ── Load ──────────────────────────────────────────────────────────────────
+    // ── Carga ─────────────────────────────────────────────────────────────────
 
     /**
-     * Fetches all active (non-retired) products from the server.
+     * Obtiene todos los productos activos del servidor.
      *
-     * @return list of active products, empty if the request fails
+     * @return lista de productos activos; vacía si la petición falla
      */
     public static List<Product> loadProductList() {
         return fetchProductList(EP_LIST_ACTIVE);
     }
 
     /**
-     * Fetches all retired products from the server.
+     * Obtiene todos los productos retirados del servidor.
      *
-     * @return list of retired products, empty if the request fails
+     * @return lista de productos retirados; vacía si la petición falla
      */
     public static List<Product> loadRetiredList() {
         return fetchProductList(EP_LIST_RETIRED);
     }
 
-    // ── Insert ────────────────────────────────────────────────────────────────
+    // ── Insertar ──────────────────────────────────────────────────────────────
 
     /**
-     * Sends a single product to the server for insertion.
-     * <p>
-     * Used by {@link Controller#addProduct} to persist a newly
-     * created product immediately after adding it to the in-memory list.
+     * Inserta un producto nuevo en el servidor.
+     * Admite {@link PerishableProduct}: si el producto tiene fecha de
+     * caducidad, se añade el parámetro {@code expirationDate}.
      *
-     * @param product the product to insert (may be a {@link PerishableProduct})
-     * @return {@code true} if the server responded with status "OK"
+     * @param product producto a insertar
+     * @return {@code true} si el servidor responde con {@code "status":"OK"}
      */
     public static boolean insertProduct(Product product) {
         try {
@@ -95,7 +89,7 @@ public class DatabaseAccess {
                     .append(encode(((PerishableProduct) product).getExpirationDate()));
             }
 
-            String response = doPost(EP_INSERT, params.toString());
+            String response = HttpClient.post(BASE_URL + EP_INSERT, params.toString());
             return isOk(response);
 
         } catch (IOException e) {
@@ -104,16 +98,14 @@ public class DatabaseAccess {
         }
     }
 
-    // ── Update ────────────────────────────────────────────────────────────────
+    // ── Actualizar ────────────────────────────────────────────────────────────
 
     /**
-     * Sends updated stock for an existing product to the server.
-     * <p>
-     * Called after {@link Controller#editStockForProduct} modifies
-     * the in-memory list, to keep the remote database in sync.
+     * Actualiza los datos de un producto existente en el servidor.
+     * Se llama tras modificar el stock en memoria para mantener la BD en sync.
      *
-     * @param product product with the new stock value already applied
-     * @return {@code true} if the server responded with status "OK"
+     * @param product producto con los nuevos valores ya aplicados
+     * @return {@code true} si el servidor responde con {@code "status":"OK"}
      */
     public static boolean updateProduct(Product product) {
         try {
@@ -122,7 +114,7 @@ public class DatabaseAccess {
                 + "&price=" + product.getPrice()
                 + "&stock=" + product.getStock();
 
-            String response = doPut(EP_UPDATE, params);
+            String response = HttpClient.put(BASE_URL + EP_UPDATE, params);
             return isOk(response);
 
         } catch (IOException e) {
@@ -131,21 +123,19 @@ public class DatabaseAccess {
         }
     }
 
-    // ── Retire ────────────────────────────────────────────────────────────────
+    // ── Retirar ───────────────────────────────────────────────────────────────
 
     /**
-     * Marks a product as retired on the server.
-     * <p>
-     * Called after {@link Controller#withdrawProduct} moves the product
-     * to the retired list in memory.
+     * Marca un producto como retirado en el servidor.
+     * Se llama tras moverlo a la lista de retirados en memoria.
      *
-     * @param productCode code of the product to retire
-     * @return {@code true} if the server responded with status "OK"
+     * @param productCode código del producto a retirar
+     * @return {@code true} si el servidor responde con {@code "status":"OK"}
      */
     public static boolean retireProduct(String productCode) {
         try {
             String params = "code=" + encode(productCode);
-            String response = doPut(EP_RETIRE, params);
+            String response = HttpClient.put(BASE_URL + EP_RETIRE, params);
             return isOk(response);
 
         } catch (IOException e) {
@@ -154,25 +144,28 @@ public class DatabaseAccess {
         }
     }
 
-    // ── Private: HTTP methods ─────────────────────────────────────────────────
+    // ── Privado: parsing de listas ────────────────────────────────────────────
 
     /**
-     * Performs a GET request and parses the JSON array response
-     * into a list of {@link Product} or {@link PerishableProduct} objects.
+     * Ejecuta un GET al endpoint dado y parsea el array JSON de vuelta
+     * a una lista de {@link Product} o {@link PerishableProduct}.
+     * Distingue el tipo por la presencia del campo {@code expirationDate}.
      *
-     * @param endpoint path relative to {@link #BASE_URL}
-     * @return parsed product list, empty on any error
+     * @param endpoint ruta relativa a {@link #BASE_URL}
+     * @return lista parseada; vacía si hay cualquier error
      */
     private static List<Product> fetchProductList(String endpoint) {
         List<Product> result = new ArrayList<>();
         try {
-            String json = doGet(endpoint);
+            String json = HttpClient.get(BASE_URL + endpoint);
             if (json == null || json.isEmpty()) return result;
 
             JsonArray array = GSON.fromJson(json, JsonArray.class);
             for (int i = 0; i < array.size(); i++) {
                 JsonObject obj = array.get(i).getAsJsonObject();
-                String expDate = obj.has("expirationDate") && !obj.get("expirationDate").isJsonNull()
+
+                String expDate = obj.has("expirationDate")
+                    && !obj.get("expirationDate").isJsonNull()
                     ? obj.get("expirationDate").getAsString()
                     : null;
 
@@ -191,7 +184,9 @@ public class DatabaseAccess {
                         obj.get("price").getAsDouble(),
                         obj.get("stock").getAsInt());
                 }
-                p.setRetired(obj.has("retired") && obj.get("retired").getAsBoolean());
+
+                p.setRetired(obj.has("retired")
+                    && obj.get("retired").getAsBoolean());
                 result.add(p);
             }
         } catch (Exception e) {
@@ -200,109 +195,14 @@ public class DatabaseAccess {
         return result;
     }
 
-    /**
-     * Opens a GET connection to {@code endpoint} and returns the raw response body.
-     *
-     * @param endpoint path relative to {@link #BASE_URL}
-     * @return response body as a String
-     * @throws IOException on connection or read failure
-     */
-    private static String doGet(String endpoint) throws IOException {
-        HttpURLConnection conn = openConnection(endpoint, "GET");
-        return readResponse(conn);
-    }
+    // ── Privado: helpers ──────────────────────────────────────────────────────
 
     /**
-     * Opens a POST connection, writes {@code formBody}, and returns the response.
+     * Comprueba si la respuesta JSON del servidor contiene
+     * {@code "status":"OK"}.
      *
-     * @param endpoint path relative to {@link #BASE_URL}
-     * @param formBody URL-encoded form parameters (e.g. "code=ABC&price=9.99")
-     * @return response body as a String
-     * @throws IOException on connection, write, or read failure
-     */
-    private static String doPost(String endpoint, String formBody) throws IOException {
-        HttpURLConnection conn = openConnection(endpoint, "POST");
-        writeBody(conn, formBody);
-        return readResponse(conn);
-    }
-
-    /**
-     * Opens a PUT connection, writes {@code formBody}, and returns the response.
-     *
-     * @param endpoint path relative to {@link #BASE_URL}
-     * @param formBody URL-encoded form parameters
-     * @return response body as a String
-     * @throws IOException on connection, write, or read failure
-     */
-    private static String doPut(String endpoint, String formBody) throws IOException {
-        HttpURLConnection conn = openConnection(endpoint, "PUT");
-        writeBody(conn, formBody);
-        return readResponse(conn);
-    }
-
-    // ── Private: connection helpers ───────────────────────────────────────────
-
-    /**
-     * Creates and configures an {@link HttpURLConnection} for the given endpoint and method.
-     *
-     * @param endpoint   path relative to {@link #BASE_URL}
-     * @param httpMethod "GET", "POST", or "PUT"
-     * @return configured (but not yet executed) connection
-     * @throws IOException if the URL is malformed or the connection cannot be opened
-     */
-    private static HttpURLConnection openConnection(String endpoint, String httpMethod)
-        throws IOException {
-        URL url = new URL(BASE_URL + endpoint);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod(httpMethod);
-        conn.setConnectTimeout(5000);
-        conn.setReadTimeout(5000);
-
-        boolean hasBody = httpMethod.equals("POST") || httpMethod.equals("PUT");
-        if (hasBody) {
-            conn.setDoOutput(true);
-            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-        }
-        return conn;
-    }
-
-    /**
-     * Writes a URL-encoded form body to the connection's output stream.
-     *
-     * @param conn     open connection with {@code doOutput = true}
-     * @param formBody URL-encoded parameters string
-     * @throws IOException on write failure
-     */
-    private static void writeBody(HttpURLConnection conn, String formBody) throws IOException {
-        byte[] bytes = formBody.getBytes(StandardCharsets.UTF_8);
-        conn.setRequestProperty("Content-Length", String.valueOf(bytes.length));
-        try (OutputStream out = conn.getOutputStream()) {
-            out.write(bytes);
-        }
-    }
-
-    /**
-     * Reads the full response body from the connection.
-     *
-     * @param conn connection whose request has already been sent
-     * @return response body as a String
-     * @throws IOException on read failure
-     */
-    private static String readResponse(HttpURLConnection conn) throws IOException {
-        try (Scanner scanner = new Scanner(
-            conn.getInputStream(), StandardCharsets.UTF_8)) {
-            scanner.useDelimiter("\\A");
-            return scanner.hasNext() ? scanner.next() : "";
-        } finally {
-            conn.disconnect();
-        }
-    }
-
-    /**
-     * Checks whether the server response JSON contains {@code "status": "OK"}.
-     *
-     * @param json raw JSON response from the server
-     * @return {@code true} if status is OK
+     * @param json respuesta raw del servidor
+     * @return {@code true} si el status es OK
      */
     private static boolean isOk(String json) {
         if (json == null || json.isEmpty()) return false;
@@ -315,10 +215,10 @@ public class DatabaseAccess {
     }
 
     /**
-     * URL-encodes a string value for use in form parameters.
+     * Codifica un valor para usarlo como parámetro URL-encoded.
      *
-     * @param value raw string
-     * @return percent-encoded string
+     * @param value texto a codificar
+     * @return texto percent-encoded
      */
     private static String encode(String value) {
         try {
